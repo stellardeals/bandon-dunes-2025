@@ -1669,17 +1669,41 @@
   <div class="modal" style="max-width:480px;">
     <div class="modal-title">📷 Scan Scorecard</div>
 
-    <!-- Step 1: API key setup -->
-    <div id="scan-step-apikey">
-      <p style="font-size:13px;color:#666;margin-bottom:12px;">Claude AI reads your scorecard photo and inputs scores automatically. Enter your Anthropic API key once — it's saved on this device only.</p>
+    <!-- Step: Passcode unlock (normal users) -->
+    <div id="scan-step-passcode" style="display:none;">
+      <p style="font-size:13px;color:#666;margin-bottom:12px;">Enter the trip passcode to unlock AI scorecard scanning.</p>
       <div class="form-group">
-        <label class="form-label">Anthropic API Key</label>
-        <input class="form-input" type="password" id="scan-apikey-input" placeholder="sk-ant-...">
+        <label class="form-label">Passcode</label>
+        <input class="form-input" type="password" id="scan-passcode-input" placeholder="••••••" onkeydown="if(event.key==='Enter')unlockWithPasscode()">
       </div>
-      <div style="font-size:11px;color:#aaa;margin-bottom:14px;">Stored in localStorage on your device. Never sent anywhere except Anthropic's API.</div>
+      <div id="scan-passcode-error" style="font-size:12px;color:var(--red);margin-bottom:10px;min-height:16px;"></div>
       <div style="display:flex;gap:8px;">
         <button class="modal-cancel" onclick="closeScanModal()">Cancel</button>
-        <button class="modal-confirm" onclick="saveApiKeyAndScan()">Save & Open Camera</button>
+        <button class="modal-confirm" onclick="unlockWithPasscode()">Unlock →</button>
+      </div>
+    </div>
+
+    <!-- Step: Host setup (first time, no encoded key yet) -->
+    <div id="scan-step-setup" style="display:none;">
+      <p style="font-size:13px;color:#666;margin-bottom:4px;">One-time host setup. Enter your API key + a passcode you'll share with the group. The encoded result gets baked into the app so nobody else ever needs a key.</p>
+      <div class="form-group" style="margin-top:10px;">
+        <label class="form-label">Anthropic API Key</label>
+        <input class="form-input" type="password" id="scan-setup-key" placeholder="sk-ant-...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Trip Passcode (you'll share this verbally)</label>
+        <input class="form-input" type="text" id="scan-setup-pass" placeholder="e.g. bandon25">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <button class="modal-cancel" onclick="closeScanModal()">Cancel</button>
+        <button class="modal-confirm" onclick="runHostSetup()">Generate</button>
+      </div>
+      <div id="scan-setup-result" style="display:none;background:var(--tan-pale);border-radius:8px;padding:12px;">
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--green);font-weight:600;margin-bottom:6px;">ENCODED KEY — paste this back to Claude:</div>
+        <div id="scan-setup-encoded" style="font-family:'DM Mono',monospace;font-size:10px;word-break:break-all;color:#333;margin-bottom:8px;"></div>
+        <button class="modal-confirm" style="font-size:12px;padding:8px;" onclick="navigator.clipboard.writeText(document.getElementById('scan-setup-encoded').textContent).then(()=>this.textContent='Copied ✓')">Copy to clipboard</button>
+        <div style="font-size:11px;color:#888;margin-top:8px;">Tell Claude: <em>"Set SCAN_ENCODED_KEY to [paste]"</em> and redeploy. Then everyone just enters the passcode.</div>
+        <button class="modal-confirm" style="margin-top:8px;font-size:12px;padding:8px;" onclick="showScanPreviewStep()">Continue to Camera →</button>
       </div>
     </div>
 
@@ -2965,29 +2989,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ============================================================
 // SCORECARD SCAN — Camera → Claude Vision → Auto-fill scores
+// Passcode-protected: key is XOR-encoded in source, unlocked by passcode.
+// Host Setup flow bakes the encoded key into the HTML via one paste back to Claude.
 // ============================================================
-let parsedScanScores = null; // { playerName: [18 scores or null] }
+
+// Embedded encoded key — empty until host runs setup and pastes result back.
+// Format: btoa(xorCipher(apiKey, passcode))
+const SCAN_ENCODED_KEY = '';
+
+let parsedScanScores = null;
 let scanRoundIndex   = 0;
 
-function openScanModal() {
-  // Use the globally tracked active score round
-  scanRoundIndex = activeScoreRound;
+function xorCipher(str, key) {
+  return str.split('').map((c, i) =>
+    String.fromCharCode(c.charCodeAt(0) ^ key.charCodeAt(i % key.length))
+  ).join('');
+}
 
-  const apiKey = localStorage.getItem('bdApiKey') || '';
-  document.getElementById('scan-step-apikey').style.display  = apiKey ? 'none' : '';
-  document.getElementById('scan-step-preview').style.display = apiKey ? ''     : 'none';
-  document.getElementById('scan-step-confirm').style.display = 'none';
-  if (apiKey) {
-    document.getElementById('scan-status').textContent = '';
-    document.getElementById('scan-preview-img').style.display = 'none';
-    document.getElementById('scan-preview-placeholder').style.display = '';
-    document.getElementById('scan-retake-btn').style.display = 'none';
-    document.getElementById('scan-camera-btn').style.display = '';
-  } else {
-    const saved = localStorage.getItem('bdApiKey') || '';
-    document.getElementById('scan-apikey-input').value = saved;
-  }
+function decodeScanKey(passcode) {
+  try { return xorCipher(atob(SCAN_ENCODED_KEY), passcode); } catch { return ''; }
+}
+
+function getActiveApiKey() {
+  // Prefer cached unlocked key in sessionStorage (cleared when browser/tab closes)
+  return sessionStorage.getItem('bdApiKeyUnlocked') || '';
+}
+
+function openScanModal() {
+  scanRoundIndex = activeScoreRound;
   document.getElementById('scan-modal').classList.add('open');
+  document.getElementById('scan-step-confirm').style.display = 'none';
+
+  if (getActiveApiKey()) {
+    // Already unlocked this session
+    showScanPreviewStep();
+    return;
+  }
+
+  if (!SCAN_ENCODED_KEY) {
+    // No key embedded yet — show host setup
+    showScanStep('setup');
+  } else {
+    // Key is embedded — just ask for passcode
+    showScanStep('passcode');
+  }
+}
+
+function showScanStep(step) {
+  ['scan-step-apikey','scan-step-preview','scan-step-confirm','scan-step-setup','scan-step-passcode'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+  const el = document.getElementById('scan-step-' + step);
+  if (el) el.style.display = '';
+}
+
+function showScanPreviewStep() {
+  showScanStep('preview');
+  document.getElementById('scan-status').textContent = '';
+  document.getElementById('scan-preview-img').style.display = 'none';
+  document.getElementById('scan-preview-placeholder').style.display = '';
+  document.getElementById('scan-retake-btn').style.display = 'none';
+  document.getElementById('scan-camera-btn').style.display = '';
 }
 
 function closeScanModal() {
@@ -2995,20 +3058,39 @@ function closeScanModal() {
   parsedScanScores = null;
 }
 
-function saveApiKeyAndScan() {
-  const key = document.getElementById('scan-apikey-input').value.trim();
+// ── Host Setup: enter raw key + passcode → shows encoded string to paste back ──
+function runHostSetup() {
+  const rawKey   = (document.getElementById('scan-setup-key')  || {}).value.trim();
+  const passcode = (document.getElementById('scan-setup-pass') || {}).value.trim();
+  if (!rawKey.startsWith('sk-ant-')) { alert('Invalid API key (must start with sk-ant-).'); return; }
+  if (passcode.length < 4)           { alert('Passcode must be at least 4 characters.'); return; }
+  const encoded = btoa(xorCipher(rawKey, passcode));
+  document.getElementById('scan-setup-result').style.display = '';
+  document.getElementById('scan-setup-encoded').textContent  = encoded;
+  // Cache unlocked for this session
+  sessionStorage.setItem('bdApiKeyUnlocked', rawKey);
+}
+
+// ── Regular user: enter passcode to unlock embedded key ──
+function unlockWithPasscode() {
+  const passcode = (document.getElementById('scan-passcode-input') || {}).value.trim();
+  if (!passcode) { alert('Enter the passcode.'); return; }
+  const key = decodeScanKey(passcode);
   if (!key.startsWith('sk-ant-')) {
-    alert('Please enter a valid Anthropic API key (starts with sk-ant-).');
+    document.getElementById('scan-passcode-error').textContent = 'Wrong passcode — try again.';
     return;
   }
-  localStorage.setItem('bdApiKey', key);
-  document.getElementById('scan-step-apikey').style.display  = 'none';
-  document.getElementById('scan-step-preview').style.display = '';
-  document.getElementById('scan-status').textContent = '';
-  document.getElementById('scan-preview-img').style.display  = 'none';
-  document.getElementById('scan-preview-placeholder').style.display = '';
-  document.getElementById('scan-retake-btn').style.display = 'none';
-  document.getElementById('scan-camera-btn').style.display = '';
+  sessionStorage.setItem('bdApiKeyUnlocked', key);
+  showScanPreviewStep();
+}
+
+function triggerCameraInput() {
+  document.getElementById('scorecard-file-input').click();
+}
+
+function retakeScorecardPhoto() {
+  showScanPreviewStep();
+  parsedScanScores = null;
   triggerCameraInput();
 }
 
@@ -3050,8 +3132,8 @@ function handleScorecardImage(event) {
 }
 
 async function parseScorecard(dataUrl, mimeType) {
-  const apiKey = localStorage.getItem('bdApiKey');
-  if (!apiKey) { alert('No API key saved.'); return; }
+  const apiKey = getActiveApiKey();
+  if (!apiKey) { alert('Session expired — please re-enter the passcode.'); openScanModal(); return; }
 
   // Strip the data URL header to get raw base64
   const base64 = dataUrl.split(',')[1];
