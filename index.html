@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bandon Dunes 2025</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #2d5016;
+    --green-mid: #3d6b20;
+    --green-light: #5a8f32;
+    --tan: #c8a96e;
+    --tan-light: #e8d5a3;
+    --tan-pale: #f5edd8;
+    --cream: #faf6ed;
+    --sand: #e8dcc8;
+    --dark: #1a1a14;
+    --white: #ffffff;
+    --red: #c0392b;
+    --blue: #1a4a7a;
+    --gold: #d4a017;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--green);
+    padding: 20px 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--tan-light);
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+  .header-title span {
+    display: block;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--tan);
+    font-weight: 400;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .header-badge {
+    background: var(--tan);
+    color: var(--green);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* NAV TABS */
+  .nav {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+  }
+  .nav-btn.active {
+    color: var(--tan-light);
+    border-bottom-color: var(--tan);
+  }
+
+  /* CONTENT */
+  .content { padding: 16px; max-width: 600px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    border: 1px solid var(--sand);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--green);
+  }
+  .card-sub {
+    font-size: 11px;
+    color: #888;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ROUND BADGE */
+  .round-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green);
+    color: var(--tan-light);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .round-badge.sheep { background: #5a3d7a; }
+  .round-badge.oldmac { background: #7a3d2d; }
+  .round-badge.trails { background: #2d4a7a; }
+  .round-badge.preserve { background: #4a7a3d; }
+  .round-badge.pac { background: #7a5a1a; }
+
+  /* TEE TIME ROW */
+  .tee-time-block {
+    background: var(--tan-pale);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-left: 3px solid var(--green);
+  }
+  .tee-time-block.sheep { border-left-color: #5a3d7a; }
+  .tee-time-block.oldmac { border-left-color: #7a3d2d; }
+  .tee-time-block.trails { border-left-color: #2d4a7a; }
+  .tee-time-block.preserve { border-left-color: #4a7a3d; }
+  .tee-time-block.pac { border-left-color: #7a5a1a; }
+
+  .tee-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .tee-course {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .tee-time-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #666;
+    background: var(--sand);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .greens-fee {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--green-mid);
+    margin-left: auto;
+  }
+
+  .groups-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .group-box {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid var(--sand);
+  }
+  .group-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .player-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--tan-pale);
+    border-radius: 4px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 2px 2px 2px 0;
+  }
+  .caddy-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+  .caddy-dot.group { background: var(--blue); }
+  .caddy-dot.none { background: #ccc; }
+
+  .caddy-legend {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .caddy-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #666;
+  }
+
+  .group-cost {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    margin-top: 6px;
+  }
+
+  /* PLAYERS SECTION */
+  .players-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .player-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid var(--sand);
+    text-align: center;
+  }
+  .player-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--green);
+    color: var(--tan-light);
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+  }
+  .player-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .player-hcp {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 8px;
+  }
+  .player-hcp input {
+    width: 50px;
+    border: 1px solid var(--sand);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    text-align: center;
+    color: var(--dark);
+    background: var(--cream);
+  }
+  .cost-breakdown {
+    font-size: 11px;
+    color: #888;
+    line-height: 1.8;
+    text-align: left;
+  }
+  .cost-total {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px solid var(--sand);
+  }
+
+  /* BETTING */
+  .game-card {
+    background: var(--white);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid var(--sand);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .game-header {
+    background: var(--green);
+    color: var(--tan-light);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .game-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .game-pot {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--tan);
+  }
+  .game-body { padding: 14px; }
+  .game-desc {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  /* SKINS TABLE */
+  .skins-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 2px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+  .skins-cell {
+    background: var(--tan-pale);
+    border-radius: 3px;
+    padding: 5px 2px;
+    text-align: center;
+  }
+  .skins-cell.header {
+    background: var(--green);
+    color: var(--tan-light);
+    font-weight: 500;
+  }
+  .skins-cell.winner {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 700;
+  }
+  .skins-cell.carry {
+    background: #ffecb3;
+  }
+
+  /* LEADERBOARD */
+  .leaderboard-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--sand);
+    gap: 12px;
+  }
+  .leaderboard-row:last-child { border-bottom: none; }
+  .lb-rank {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--tan);
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .lb-rank.gold { color: var(--gold); }
+  .lb-rank.silver { color: #aaa; }
+  .lb-rank.bronze { color: #cd7f32; }
+  .lb-name { font-weight: 600; font-size: 14px; flex: 1; }
+  .lb-pts {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--green);
+    font-weight: 500;
+  }
+  .lb-money {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--red);
+    min-width: 60px;
+    text-align: right;
+  }
+  .lb-money.positive { color: var(--green-mid); }
+
+  /* SCORE INPUT */
+  .score-round-select {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+  .round-pill {
+    flex-shrink: 0;
+    background: var(--sand);
+    border: none;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .round-pill.active {
+    background: var(--green);
+    color: var(--white);
+  }
+
+  .score-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .score-table th {
+    background: var(--green);
+    color: var(--tan-light);
+    padding: 8px 6px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+  .score-table th:first-child { text-align: left; border-radius: 6px 0 0 0; }
+  .score-table th:last-child { border-radius: 0 6px 0 0; }
+  .score-table td {
+    padding: 6px 4px;
+    text-align: center;
+    border-bottom: 1px solid var(--sand);
+  }
+  .score-table td:first-child { text-align: left; font-weight: 500; }
+  .score-table input[type="number"] {
+    width: 36px;
+    border: 1px solid var(--sand);
+    border-radius: 4px;
+    padding: 4px 2px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    background: var(--cream);
+    color: var(--dark);
+  }
+  .score-table input[type="number"]:focus {
+    outline: none;
+    border-color: var(--green);
+    background: var(--white);
+  }
+  .score-table tr:last-child td { border-bottom: none; }
+  .score-table .birdie { background: #e8f5e9; }
+  .score-table .eagle { background: #c8e6c9; }
+  .score-table .bogey { background: #fff3e0; }
+  .score-table .double { background: #fce4ec; }
+
+  .save-btn {
+    width: 100%;
+    background: var(--green);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: background 0.2s;
+  }
+  .save-btn:active { background: var(--green-mid); }
+
+  /* NASSAU */
+  .nassau-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--sand);
+  }
+  .nassau-row:last-child { border-bottom: none; }
+  .nassau-label { font-size: 13px; font-weight: 500; }
+  .nassau-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+  }
+  .nassau-val.win { color: var(--green-mid); }
+  .nassau-val.lose { color: var(--red); }
+
+  /* STABLEFORD */
+  .stableford-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .stableford-table th {
+    background: var(--green);
+    color: var(--tan-light);
+    padding: 7px 6px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+  }
+  .stableford-table th:first-child { text-align: left; }
+  .stableford-table td {
+    padding: 8px 6px;
+    text-align: center;
+    border-bottom: 1px solid var(--sand);
+    font-family: 'DM Mono', monospace;
+  }
+  .stableford-table td:first-child { text-align: left; font-family: 'DM Sans'; font-weight: 500; }
+  .stableford-table .total-col { font-weight: 700; color: var(--green); }
+
+  /* CADDY SECTION */
+  .caddy-summary {
+    background: var(--tan-pale);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .caddy-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    font-size: 13px;
+  }
+  .caddy-row:last-child { border-bottom: none; }
+  .caddy-type-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .caddy-type-badge.carry { background: var(--green); color: white; }
+  .caddy-type-badge.group { background: var(--blue); color: white; }
+  .caddy-type-badge.none { background: var(--sand); color: #666; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--green);
+    margin-bottom: 4px;
+  }
+  .section-sub {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 16px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* CHIP */
+  .chip {
+    display: inline-block;
+    background: var(--tan-pale);
+    border: 1px solid var(--tan);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--green);
+    margin: 2px;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    text-align: center;
+    color: #aaa;
+    font-size: 13px;
+    padding: 24px 0;
+    font-style: italic;
+  }
+
+  /* MONEY TRACKER */
+  .money-summary {
+    background: var(--green);
+    color: var(--white);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .money-summary-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--tan);
+    margin-bottom: 4px;
+  }
+  .money-summary-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: var(--tan-light);
+  }
+
+  .transaction-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--sand);
+    gap: 10px;
+  }
+  .transaction-row:last-child { border-bottom: none; }
+  .txn-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .txn-icon.win { background: #e8f5e9; }
+  .txn-icon.lose { background: #fce4ec; }
+  .txn-info { flex: 1; }
+  .txn-desc { font-size: 13px; font-weight: 500; }
+  .txn-meta { font-size: 11px; color: #888; }
+  .txn-amt {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .txn-amt.pos { color: var(--green-mid); }
+  .txn-amt.neg { color: var(--red); }
+
+  .add-txn-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    background: var(--white);
+    border: 2px dashed var(--tan);
+    border-radius: 10px;
+    padding: 14px;
+    color: var(--tan);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: all 0.2s;
+  }
+  .add-txn-btn:hover { background: var(--tan-pale); border-color: var(--green); color: var(--green); }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: flex-end;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 32px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+  .form-group { margin-bottom: 14px; }
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-input {
+    width: 100%;
+    border: 1px solid var(--sand);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--dark);
+    background: var(--cream);
+  }
+  .form-input:focus { outline: none; border-color: var(--green); background: var(--white); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .btn-cancel {
+    background: var(--sand);
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .btn-confirm {
+    background: var(--green);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* PAIR FREQUENCY */
+  .pair-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    overflow-x: auto;
+  }
+  .pair-table-wrap { overflow-x: auto; }
+  .pair-table th, .pair-table td {
+    padding: 7px 6px;
+    text-align: center;
+    border: 1px solid var(--sand);
+  }
+  .pair-table th {
+    background: var(--green);
+    color: var(--tan-light);
+    font-family: 'DM Mono', monospace;
+  }
+  .pair-table td { font-family: 'DM Mono', monospace; }
+  .pair-table .self { background: var(--sand); }
+  .pair-table .high { background: #c8e6c9; color: var(--green); font-weight: 700; }
+  .pair-table .med { background: #fff9c4; }
+  .pair-table .low { background: #ffcdd2; }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="header-title">
+      <span>June 4–7, 2025</span>
+      Bandon Dunes
+    </div>
+    <div class="header-badge">⛳ 5 Rounds</div>
+  </div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showSection('schedule',this)">Schedule</button>
+    <button class="nav-btn" onclick="showSection('players',this)">Players</button>
+    <button class="nav-btn" onclick="showSection('scores',this)">Scores</button>
+    <button class="nav-btn" onclick="showSection('betting',this)">Betting</button>
+    <button class="nav-btn" onclick="showSection('money',this)">💰 Money</button>
+    <button class="nav-btn" onclick="showSection('costs',this)">Costs</button>
+    <button class="nav-btn" onclick="showSection('caddies',this)">Caddies</button>
+  </nav>
+</div>
+
+<div class="content">
+
+  <!-- SCHEDULE -->
+  <div id="section-schedule" class="section active">
+    <div class="section-title">Itinerary</div>
+    <div class="section-sub">5 rounds · 3 nights</div>
+
+    <!-- Round 1: Bandon Dunes -->
+    <div class="tee-time-block">
+      <div class="tee-meta">
+        <div class="round-badge">Round 1</div>
+        <div class="tee-time-label">2:40 / 2:50 PM</div>
+        <div class="greens-fee">$375/player</div>
+      </div>
+      <div class="tee-course">Bandon Dunes</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px;">Thursday, June 4</div>
+      <div class="groups-row">
+        <div class="group-box">
+          <div class="group-label">Group 1 · 2:40 PM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot"></span>Bobby</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Matt</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Nick</span>
+            <span class="player-chip"><span class="caddy-dot"></span>Zack</span>
+          </div>
+          <div class="group-cost">2G / 2C / 0N · $370</div>
+        </div>
+        <div class="group-box">
+          <div class="group-label">Group 2 · 2:50 PM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot group"></span>Chris</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>John</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Taylor</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Vince</span>
+          </div>
+          <div class="group-cost">3G / 0C / 1N · $150</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Round 2: Sheep Ranch -->
+    <div class="tee-time-block sheep">
+      <div class="tee-meta">
+        <div class="round-badge sheep">Round 2</div>
+        <div class="tee-time-label">9:00 / 9:10 AM</div>
+        <div class="greens-fee">$375/player</div>
+      </div>
+      <div class="tee-course">Sheep Ranch</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px;">Friday, June 5</div>
+      <div class="groups-row">
+        <div class="group-box">
+          <div class="group-label">Group 3 · 9:00 AM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot group"></span>Chris</span>
+            <span class="player-chip"><span class="caddy-dot"></span>John</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Nick</span>
+            <span class="player-chip"><span class="caddy-dot"></span>Zack</span>
+          </div>
+          <div class="group-cost">2G / 2C / 0N · $370</div>
+        </div>
+        <div class="group-box">
+          <div class="group-label">Group 4 · 9:10 AM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot"></span>Bobby</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Matt</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Taylor</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>Vince</span>
+          </div>
+          <div class="group-cost">2G / 1C / 1N · $245</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Round 3: Old Mac -->
+    <div class="tee-time-block oldmac">
+      <div class="tee-meta">
+        <div class="round-badge oldmac">Round 3</div>
+        <div class="tee-time-label">3:10 / 3:20 PM</div>
+        <div class="greens-fee">$190/player</div>
+      </div>
+      <div class="tee-course">Old Mac</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px;">Friday, June 5</div>
+      <div class="groups-row">
+        <div class="group-box">
+          <div class="group-label">Group 5 · 3:10 PM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot group"></span>Chris</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Matt</span>
+            <span class="player-chip"><span class="caddy-dot"></span>Nick</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Vince</span>
+          </div>
+          <div class="group-cost">3G / 1C / 0N · $275</div>
+        </div>
+        <div class="group-box">
+          <div class="group-label">Group 6 · 3:20 PM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot"></span>Bobby</span>
+            <span class="player-chip"><span class="caddy-dot"></span>John</span>
+            <span class="player-chip"><span class="caddy-dot"></span>Taylor</span>
+            <span class="player-chip"><span class="caddy-dot"></span>Zack</span>
+          </div>
+          <div class="group-cost">0G / 4C / 0N · $500</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Round 4: Bandon Trails -->
+    <div class="tee-time-block trails">
+      <div class="tee-meta">
+        <div class="round-badge trails">Round 4</div>
+        <div class="tee-time-label">7:40 / 7:50 AM</div>
+        <div class="greens-fee">$375/player</div>
+      </div>
+      <div class="tee-course">Bandon Trails</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px;">Saturday, June 6</div>
+      <div class="groups-row">
+        <div class="group-box">
+          <div class="group-label">Group 7 · 7:40 AM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot group"></span>Nick</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Taylor</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>Vince</span>
+            <span class="player-chip"><span class="caddy-dot"></span>Zack</span>
+          </div>
+          <div class="group-cost">2G / 1C / 1N · $245</div>
+        </div>
+        <div class="group-box">
+          <div class="group-label">Group 8 · 7:50 AM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot"></span>Bobby</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Chris</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>John</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Matt</span>
+          </div>
+          <div class="group-cost">2G / 2C / 0N · $370</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Round 4b: Bandon Preserve -->
+    <div class="tee-time-block preserve">
+      <div class="tee-meta">
+        <div class="round-badge preserve">Bonus</div>
+        <div class="tee-time-label">2:00 PM</div>
+        <div class="greens-fee">$125/player</div>
+      </div>
+      <div class="tee-course">Bandon Preserve</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px;">Saturday, June 6</div>
+      <div class="groups-row">
+        <div class="group-box">
+          <div class="group-label">Group 9</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot none"></span>Bobby</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>John</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>Nick</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>Vince</span>
+          </div>
+          <div class="group-cost">0G / 0C / 4N · $0</div>
+        </div>
+        <div class="group-box">
+          <div class="group-label">Group 10</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot none"></span>Chris</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>Matt</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>Taylor</span>
+            <span class="player-chip"><span class="caddy-dot none"></span>Zack</span>
+          </div>
+          <div class="group-cost">0G / 0C / 4N · $0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Round 5: Pac Dunes -->
+    <div class="tee-time-block pac">
+      <div class="tee-meta">
+        <div class="round-badge pac">Round 5 ⭐</div>
+        <div class="tee-time-label">8:00 / 8:10 AM</div>
+        <div class="greens-fee">$375/player</div>
+      </div>
+      <div class="tee-course">Pac Dunes</div>
+      <div style="font-size:11px;color:#888;margin-bottom:10px;">Sunday, June 7 · Finale</div>
+      <div class="groups-row">
+        <div class="group-box">
+          <div class="group-label">Group 11 · 8:00 AM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot"></span>John</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Matt</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Nick</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Taylor</span>
+          </div>
+          <div class="group-cost">3G / 1C / 0N · $275</div>
+        </div>
+        <div class="group-box">
+          <div class="group-label">Group 12 · 8:10 AM</div>
+          <div>
+            <span class="player-chip"><span class="caddy-dot"></span>Bobby</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Chris</span>
+            <span class="player-chip"><span class="caddy-dot group"></span>Vince</span>
+            <span class="player-chip"><span class="caddy-dot"></span>Zack</span>
+          </div>
+          <div class="group-cost">2G / 2C / 0N · $370</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="caddy-legend">
+      <div class="caddy-legend-item"><span class="caddy-dot"></span> Carry</div>
+      <div class="caddy-legend-item"><span class="caddy-dot group"></span> Group/Forecaddie</div>
+      <div class="caddy-legend-item"><span class="caddy-dot none"></span> No Caddy</div>
+    </div>
+
+    <!-- Pair Frequency -->
+    <div class="card" style="margin-top:16px;">
+      <div class="card-header">
+        <div class="card-title">Pair Frequency</div>
+        <div class="card-sub">Rounds Together</div>
+      </div>
+      <div class="pair-table-wrap">
+        <table class="pair-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Nick</th><th>John</th><th>Vince</th><th>Bobby</th><th>Matt</th><th>Zack</th><th>Chris</th><th>Taylor</th>
+            </tr>
+          </thead>
+          <tbody id="pair-matrix"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PLAYERS -->
+  <div id="section-players" class="section">
+    <div class="section-title">Players</div>
+    <div class="section-sub">8 players · Edit handicaps below</div>
+
+    <div class="players-grid" id="players-grid"></div>
+  </div>
+
+  <!-- SCORES -->
+  <div id="section-scores" class="section">
+    <div class="section-title">Scorecards</div>
+    <div class="section-sub">Enter gross scores per hole</div>
+
+    <div class="score-round-select" id="score-round-select"></div>
+    <div id="scorecard-body"></div>
+  </div>
+
+  <!-- BETTING -->
+  <div id="section-betting" class="section">
+    <div class="section-title">Betting Games</div>
+    <div class="section-sub">Track bets across all rounds</div>
+
+    <!-- Trip Leaderboard -->
+    <div class="game-card">
+      <div class="game-header">
+        <div class="game-title">🏆 Stableford — Trip Trophy</div>
+        <span style="font-size:11px;color:var(--tan);font-family:'DM Mono',monospace;">5 ROUNDS</span>
+      </div>
+      <div class="game-body">
+        <div class="game-desc">Modified Stableford: Eagle=4pts, Birdie=2pts, Par=0, Bogey=-1, Double=-3. Cumulative across all 5 rounds. Net scores used (handicap applied).</div>
+        <table class="stableford-table">
+          <thead>
+            <tr>
+              <th>Player</th><th>R1</th><th>R2</th><th>R3</th><th>R4</th><th>R5</th><th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="stableford-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Skins -->
+    <div class="game-card">
+      <div class="game-header">
+        <div class="game-title">🎯 Skins</div>
+        <div class="game-pot" id="skins-pot">Pot: $0</div>
+      </div>
+      <div class="game-body">
+        <div class="game-desc">Net lowest score wins the hole outright. Ties carry the skin to the next hole. Set the per-hole value below.</div>
+        <div class="form-row" style="margin-bottom:12px;">
+          <div>
+            <label class="form-label">$/Hole</label>
+            <input class="form-input" type="number" id="skins-per-hole" value="5" min="1" oninput="updateSkinsPot()">
+          </div>
+          <div>
+            <label class="form-label">Round</label>
+            <select class="form-input" id="skins-round-select" onchange="renderSkinsHoles()">
+              <option value="0">Round 1 — Bandon Dunes</option>
+              <option value="1">Round 2 — Sheep Ranch</option>
+              <option value="2">Round 3 — Old Mac</option>
+              <option value="3">Round 4 — Bandon Trails</option>
+              <option value="4">Round 5 — Pac Dunes</option>
+            </select>
+          </div>
+        </div>
+        <div id="skins-holes"></div>
+        <div id="skins-results" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- Nassau -->
+    <div class="game-card">
+      <div class="game-header">
+        <div class="game-title">🤝 Nassau</div>
+        <div class="game-pot">3 bets/round</div>
+      </div>
+      <div class="game-body">
+        <div class="game-desc">Three separate bets: Front 9, Back 9, and Overall 18. Each foursome runs their own Nassau each round. Press option available.</div>
+        <div style="margin-bottom:8px;">
+          <label class="form-label">Nassau Bet Amount ($)</label>
+          <input class="form-input" type="number" id="nassau-amt" value="20" min="1">
+        </div>
+        <div id="nassau-rounds"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MONEY -->
+  <div id="section-money" class="section">
+    <div class="section-title">Money Tracker</div>
+    <div class="section-sub">Running totals across all bets</div>
+
+    <div class="money-summary">
+      <div class="money-summary-label">Total In Play</div>
+      <div class="money-summary-val" id="total-in-play">$0</div>
+    </div>
+
+    <div id="leaderboard-section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Standings</div>
+          <div class="card-sub">Net $ position</div>
+        </div>
+        <div id="money-leaderboard"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💸 Who Owes Who</div>
+        <div class="card-sub">Minimum settlements</div>
+      </div>
+      <div id="settlement-section"><div class="empty">No settlements needed yet</div></div>
+    </div>
+
+    <button class="add-txn-btn" onclick="openTxnModal()">+ Record Transaction</button>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Transaction Log</div>
+        <div class="card-sub" id="txn-count">0 entries</div>
+      </div>
+      <div id="txn-log"></div>
+    </div>
+  </div>
+
+  <!-- COSTS -->
+  <div id="section-costs" class="section">
+    <div class="section-title">Cost Breakdown</div>
+    <div class="section-sub">Trip + gambling per player</div>
+
+    <!-- Trip costs summary banner -->
+    <div style="background:var(--green);border-radius:12px;padding:16px;margin-bottom:14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--tan);text-transform:uppercase;">Greens</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--tan-light);">$1,815</div>
+        <div style="font-size:10px;color:var(--tan);opacity:0.7;">per player</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--tan);text-transform:uppercase;">Caddy Range</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--tan-light);">$160–625</div>
+        <div style="font-size:10px;color:var(--tan);opacity:0.7;">by player</div>
+      </div>
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--tan);text-transform:uppercase;">Total Range</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--tan-light);" id="costs-range">—</div>
+        <div style="font-size:10px;color:var(--tan);opacity:0.7;">net owed</div>
+      </div>
+    </div>
+
+    <!-- Per-player breakdown -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Trip Costs</div>
+        <div class="card-sub">Greens · Caddy · Deposit</div>
+      </div>
+      <div id="cost-table"></div>
+    </div>
+
+    <!-- Gambling summary pulled from money tracker -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Gambling P&L</div>
+        <div class="card-sub">From betting tab</div>
+      </div>
+      <div id="costs-gambling-summary"></div>
+    </div>
+
+    <!-- All-in total -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">All-In Total</div>
+        <div class="card-sub">Trip + net gambling</div>
+      </div>
+      <div id="costs-allin"></div>
+    </div>
+  </div>
+
+  <!-- CADDIES -->
+  <div id="section-caddies" class="section">
+    <div class="section-title">Caddy Schedule</div>
+    <div class="section-sub">All players · all rounds</div>
+
+    <!-- View toggle -->
+    <div style="display:flex;gap:6px;margin-bottom:14px;">
+      <button id="caddy-view-round" class="round-pill active" onclick="setCaddyView('round',this)">By Round</button>
+      <button id="caddy-view-player" class="round-pill" onclick="setCaddyView('player',this)">By Player</button>
+    </div>
+
+    <div id="caddy-by-round"></div>
+    <div id="caddy-by-player" style="display:none;"></div>
+
+    <div class="card" style="margin-top:4px;">
+      <div class="card-header">
+        <div class="card-title">Tip Guide</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center;">
+        <div style="background:var(--green);border-radius:8px;padding:10px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tan);letter-spacing:1px;margin-bottom:4px;">CARRY</div>
+          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--tan-light);">$125</div>
+          <div style="font-size:10px;color:var(--tan);opacity:0.8;">per player</div>
+        </div>
+        <div style="background:var(--blue);border-radius:8px;padding:10px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--tan-light);letter-spacing:1px;margin-bottom:4px;">GROUP</div>
+          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--white);">$50–60</div>
+          <div style="font-size:10px;color:var(--tan-light);opacity:0.8;">per player</div>
+        </div>
+        <div style="background:var(--sand);border-radius:8px;padding:10px;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;letter-spacing:1px;margin-bottom:4px;">NONE</div>
+          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#888;">$0</div>
+          <div style="font-size:10px;color:#aaa;">carry own bag</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TRANSACTION MODAL -->
+<div class="modal-overlay" id="txn-modal">
+  <div class="modal">
+    <div class="modal-title">Record Transaction</div>
+    <div class="form-group">
+      <label class="form-label">Winner</label>
+      <select class="form-input" id="txn-winner"></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Loser (pays winner)</label>
+      <select class="form-input" id="txn-loser"></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Amount ($)</label>
+        <input class="form-input" type="number" id="txn-amount" min="1" placeholder="20">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Game</label>
+        <select class="form-input" id="txn-game">
+          <option>Skins</option>
+          <option>Nassau</option>
+          <option>Stableford</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes (optional)</label>
+      <input class="form-input" type="text" id="txn-notes" placeholder="e.g. R1 Front 9 Nassau">
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeTxnModal()">Cancel</button>
+      <button class="btn-confirm" onclick="saveTxn()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const PLAYERS = ['Bobby', 'Chris', 'John', 'Matt', 'Nick', 'Taylor', 'Vince', 'Zack'];
+const ROUNDS = [
+  { name: 'Bandon Dunes', short: 'R1', date: 'Jun 4', greens: 375 },
+  { name: 'Sheep Ranch', short: 'R2', date: 'Jun 5', greens: 375 },
+  { name: 'Old Mac', short: 'R3', date: 'Jun 5', greens: 190 },
+  { name: 'Bandon Trails', short: 'R4', date: 'Jun 6', greens: 375 },
+  { name: 'Pac Dunes', short: 'R5', date: 'Jun 7', greens: 375 },
+];
+
+const COSTS = {
+  Bobby:  { greens: 1815, caddy: 625, deposit: 0 },
+  Chris:  { greens: 1815, caddy: 280, deposit: 0 },
+  John:   { greens: 1815, caddy: 500, deposit: -625 },
+  Matt:   { greens: 1815, caddy: 280, deposit: -625 },
+  Nick:   { greens: 1815, caddy: 355, deposit: -625 },
+  Taylor: { greens: 1815, caddy: 345, deposit: -2660 },
+  Vince:  { greens: 1815, caddy: 160, deposit: -625 },
+  Zack:   { greens: 1815, caddy: 625, deposit: 0 },
+};
+
+const CADDY_SCHEDULE = {
+  Bobby:  ['Carry','Carry','Carry','Carry','None','Carry'],
+  Chris:  ['Group','Group','Group','Group','None','Group'],
+  John:   ['None','Carry','Carry','Group','None','Carry'],
+  Matt:   ['Group','Group','Group','Group','None','Group'],
+  Nick:   ['Group','Group','Carry','Group','None','Group'],
+  Taylor: ['Group','Group','Carry','Group','None','Group'],
+  Vince:  ['Group','None','Group','None','None','Group'],
+  Zack:   ['Carry','Carry','Carry','Carry','None','Carry'],
+};
+
+const PAIR_MATRIX = {
+  Nick:   { Nick:'-', John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:2, Taylor:2 },
+  John:   { Nick:3, John:'-', Vince:2, Bobby:3, Matt:2, Zack:2, Chris:3, Taylor:3 },
+  Vince:  { Nick:3, John:2, Vince:'-', Bobby:3, Matt:2, Zack:2, Chris:3, Taylor:3 },
+  Bobby:  { Nick:2, John:3, Vince:3, Bobby:'-', Matt:3, Zack:3, Chris:2, Taylor:2 },
+  Matt:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:'-', Zack:2, Chris:3, Taylor:3 },
+  Zack:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:2, Zack:'-', Chris:3, Taylor:3 },
+  Chris:  { Nick:2, John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:'-', Taylor:2 },
+  Taylor: { Nick:2, John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:2, Taylor:'-' },
+};
+
+// ============================================================
+// COURSE SCORECARDS — par & stroke index per hole
+// ============================================================
+// R1: Bandon Dunes (par 72, rating 74.1, slope 143)
+// R2: Sheep Ranch (par 72, rating 72.1, slope 122)
+// R3: Old Mac (par 71, rating 74.4, slope 131)
+// R4: Bandon Trails (par 71, rating 73.6, slope 130)
+// R5: Pac Dunes (par 71, rating 72.9, slope 133)
+
+const COURSE_DATA = [
+  { // R1 — Bandon Dunes (David McLay Kidd, 1999)
+    par: [4,3,5,4,3,4,4,4,5, 4,4,3,5,4,3,4,4,5],
+    si:  [13,15,3,5,1,17,7,11,9, 8,2,18,6,16,14,10,12,4],
+    rating: 74.1, slope: 143
+  },
+  { // R2 — Sheep Ranch (Coore & Crenshaw, 2020)
+    par: [5,4,4,4,3,5,4,3,4, 4,3,4,5,4,3,4,4,5],
+    si:  [5,13,9,1,17,3,11,15,7, 6,16,12,2,10,18,8,14,4],
+    rating: 72.1, slope: 122
+  },
+  { // R3 — Old Mac (Doak/Urbina, 2010)
+    par: [4,3,4,4,3,5,4,3,5, 4,4,4,4,3,5,4,5,4],
+    si:  [11,15,9,1,17,3,5,13,7, 8,2,12,10,16,4,6,14,18],
+    rating: 74.4, slope: 131
+  },
+  { // R4 — Bandon Trails (Coore & Crenshaw, 2005)
+    par: [4,3,4,4,3,4,4,4,5, 4,5,3,4,4,4,4,3,5],
+    si:  [9,17,5,3,15,7,11,13,1, 10,4,16,12,6,8,2,18,14],
+    rating: 73.6, slope: 130
+  },
+  { // R5 — Pacific Dunes (Tom Doak, 2001)
+    par: [4,4,4,5,3,5,4,3,4, 4,5,4,4,3,4,4,3,5],
+    si:  [18,11,16,8,9,5,2,14,4, 17,12,3,1,13,15,6,10,7],
+    rating: 72.9, slope: 133
+  }
+];
+
+// ============================================================
+// HANDICAPS — pre-loaded from spreadsheet
+// ============================================================
+let handicaps = {
+  Bobby:  12.1,
+  Chris:  9,
+  John:   10.5,
+  Matt:   12,
+  Nick:   14,
+  Taylor: 7.5,
+  Vince:  13,
+  Zack:   9
+};
+
+// Course handicap = handicap_index * (slope / 113) + (rating - par)
+function courseHandicap(playerHcp, roundIdx) {
+  const cd = COURSE_DATA[roundIdx];
+  const coursePar = cd.par.reduce((a,b)=>a+b,0);
+  return Math.round(playerHcp * (cd.slope / 113) + (cd.rating - coursePar));
+}
+
+// Strokes received on a given hole (course handicap vs stroke index)
+function strokesOnHole(playerHcp, roundIdx, holeIdx) {
+  const ch = courseHandicap(playerHcp, roundIdx);
+  const si = COURSE_DATA[roundIdx].si[holeIdx];
+  if (ch <= 0) return 0;
+  let strokes = Math.floor(ch / 18);
+  if (si <= (ch % 18)) strokes++;
+  return strokes;
+}
+
+// Strokes relative to lowest course handicap in the group (for dot display)
+function relativeStrokesOnHole(playerHcp, groupHcps, roundIdx, holeIdx) {
+  const lowestCH = Math.min(...groupHcps.map(h => courseHandicap(h, roundIdx)));
+  const playerCH = courseHandicap(playerHcp, roundIdx);
+  const diff = playerCH - lowestCH;
+  if (diff <= 0) return 0;
+  const si = COURSE_DATA[roundIdx].si[holeIdx];
+  let strokes = Math.floor(diff / 18);
+  if (si <= (diff % 18)) strokes++;
+  return strokes;
+}
+
+// Scores: [round][player][hole1..18]
+let scores = {};
+ROUNDS.forEach((r, ri) => {
+  scores[ri] = {};
+  PLAYERS.forEach(p => scores[ri][p] = Array(18).fill(''));
+});
+
+// Transactions
+let transactions = [];
+
+// Skins winner per hole per round
+let skinsData = {}; // [round][hole] = player or ''
+ROUNDS.forEach((r, ri) => { skinsData[ri] = Array(18).fill(''); });
+
+// Wolf data per hole - removed
+// BBB data - removed
+
+// ============================================================
+// NAV
+// ============================================================
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'scores') renderScorecard();
+  if (id === 'betting') { renderStableford(); renderSkinsHoles(); renderNassau(); }
+  if (id === 'money') renderMoney();
+  if (id === 'costs') renderCosts();
+  if (id === 'caddies') renderCaddies();
+}
+
+// ============================================================
+// PAIR MATRIX
+// ============================================================
+function buildPairMatrix() {
+  const cols = ['Nick','John','Vince','Bobby','Matt','Zack','Chris','Taylor'];
+  const tbody = document.getElementById('pair-matrix');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  cols.forEach(row => {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th');
+    th.textContent = row;
+    th.style.cssText = 'background:var(--green);color:var(--tan-light);text-align:left;padding:6px;font-size:10px;';
+    tr.appendChild(th);
+    cols.forEach(col => {
+      const td = document.createElement('td');
+      const v = PAIR_MATRIX[row][col];
+      td.textContent = v;
+      if (v === '-') td.className = 'self';
+      else if (v >= 3) td.className = 'high';
+      else if (v === 2) td.className = 'med';
+      else td.className = 'low';
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+// PLAYERS
+// ============================================================
+function buildPlayers() {
+  const grid = document.getElementById('players-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  PLAYERS.forEach(p => {
+    const initials = p[0];
+    const hue = ['Bobby','Zack'].includes(p) ? 'var(--green)' : ['Chris','Matt'].includes(p) ? '#5a3d7a' : ['John','Taylor'].includes(p) ? '#7a3d2d' : '#2d4a7a';
+    const div = document.createElement('div');
+    div.className = 'player-card';
+    div.innerHTML = `
+      <div class="player-avatar" style="background:${hue}">${initials}</div>
+      <div class="player-name">${p}</div>
+      <div class="player-hcp">
+        HCP: <input type="number" id="hcp-${p}" placeholder="--" min="0" max="36" step="0.1" value="${handicaps[p] !== null ? handicaps[p] : ''}" oninput="saveHcp('${p}', this.value)">
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+  buildCostTable();
+}
+
+function saveHcp(player, val) {
+  handicaps[player] = val === '' ? null : parseFloat(val);
+}
+
+function buildCostTable() {
+  const ct = document.getElementById('cost-table');
+  if (!ct) return;
+  let html = '';
+  PLAYERS.forEach(p => {
+    const c = COSTS[p];
+    const total = c.greens + c.caddy + c.deposit;
+    html += `
+      <div class="caddy-row">
+        <span style="font-weight:600">${p}</span>
+        <span class="caddy-type-badge group">Greens $${c.greens.toLocaleString()}</span>
+        <span class="caddy-type-badge carry">Caddy $${c.caddy}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;color:var(--green)">Net $${total.toLocaleString()}</span>
+      </div>`;
+  });
+  ct.innerHTML = html;
+}
+
+// ============================================================
+// SCORES
+// ============================================================
+let activeScoreRound = 0;
+
+function buildScoreRoundPills() {
+  const wrap = document.getElementById('score-round-select');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  ROUNDS.forEach((r, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'round-pill' + (i === activeScoreRound ? ' active' : '');
+    btn.textContent = r.short + ' · ' + r.short.replace('R','');
+    btn.onclick = () => {
+      activeScoreRound = i;
+      document.querySelectorAll('.round-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderScorecard();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function renderScorecard() {
+  buildScoreRoundPills();
+  const body = document.getElementById('scorecard-body');
+  if (!body) return;
+  const ri = activeScoreRound;
+  const cd = COURSE_DATA[ri];
+  const coursePar = cd.par.reduce((a,b)=>a+b,0);
+
+  let html = `<div class="card" style="overflow-x:auto;padding:12px 8px;">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:10px;">
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--green);">${ROUNDS[ri].name}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;">Par ${coursePar} · ${cd.rating}/${cd.slope}</div>
+    </div>
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th>Player</th>`;
+  for (let h = 1; h <= 18; h++) html += `<th>${h}</th>`;
+  html += `<th>TOT</th><th>NET</th></tr>
+        <tr style="background:var(--tan-pale);">
+          <td style="font-family:'DM Mono',monospace;font-size:9px;color:#888;text-align:left;padding:3px 4px;">PAR/SI</td>`;
+  for (let h = 0; h < 18; h++) {
+    html += `<td style="font-size:9px;font-family:'DM Mono',monospace;color:#666;padding:2px;">${cd.par[h]}<br><span style="color:#aaa">${cd.si[h]}</span></td>`;
+  }
+  html += `<td style="font-size:9px;font-family:'DM Mono',monospace;color:#666;">${coursePar}</td><td></td></tr>
+      </thead><tbody>`;
+
+  const allHcps = PLAYERS.map(p => handicaps[p]);
+
+  PLAYERS.forEach(p => {
+    const hcp = handicaps[p];
+    html += `<tr><td style="white-space:nowrap;">${p}<br><span style="font-family:'DM Mono',monospace;font-size:9px;color:#888;">CH:${courseHandicap(hcp,ri)}</span></td>`;
+    let grossTotal = 0;
+    let netTotal = 0;
+    for (let h = 0; h < 18; h++) {
+      const v = scores[ri][p][h];
+      const par = cd.par[h];
+      const strokes = strokesOnHole(hcp, ri, h);
+      const dotStrokes = relativeStrokesOnHole(hcp, allHcps, ri, h);
+      const gross = v === '' ? null : parseInt(v);
+      const net = gross !== null ? gross - strokes : null;
+      const diff = gross !== null ? gross - par : null;
+      let cls = '';
+      if (diff !== null) {
+        if (diff <= -2) cls = ' class="eagle"';
+        else if (diff === -1) cls = ' class="birdie"';
+        else if (diff === 1) cls = ' class="bogey"';
+        else if (diff >= 2) cls = ' class="double"';
+      }
+      if (gross) { grossTotal += gross; netTotal += net; }
+      html += `<td${cls} style="position:relative;"><input type="number" min="1" max="15" value="${v}" oninput="saveScore(${ri},'${p}',${h},this.value)">${dotStrokes > 0 ? '<span style="display:block;color:var(--tan);font-size:7px;line-height:1;">' + '•'.repeat(Math.min(dotStrokes,2)) + '</span>' : ''}</td>`;
+    }
+    html += `<td style="font-family:'DM Mono',monospace;font-weight:700;font-size:11px;">${grossTotal || '-'}</td>`;
+    if (grossTotal) {
+      const diff = netTotal - coursePar;
+      const netStr = diff === 0 ? 'E' : (diff > 0 ? '+' : '') + diff;
+      html += `<td style="font-family:'DM Mono',monospace;font-weight:700;font-size:11px;color:${diff <= 0 ? 'var(--green-mid)' : 'var(--red)'};">${netStr}</td></tr>`;
+    } else {
+      html += `<td>-</td></tr>`;
+    }
+  });
+  html += '</tbody></table>';
+  html += `<button class="save-btn" onclick="alert('Scores saved!')">Save Scores</button></div>`;
+  body.innerHTML = html;
+}
+
+function saveScore(round, player, hole, val) {
+  scores[round][player][hole] = val === '' ? '' : parseInt(val);
+}
+
+// ============================================================
+// STABLEFORD
+// ============================================================
+function stablefordPts(gross, par, strokes) {
+  if (gross === '' || gross === undefined || gross === null) return 0;
+  const net = parseInt(gross) - strokes;
+  const diff = net - par;
+  if (diff <= -2) return 4;
+  if (diff === -1) return 2;
+  if (diff === 0) return 0;
+  if (diff === 1) return -1;
+  return -3;
+}
+
+function renderStableford() {
+  const tbody = document.getElementById('stableford-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const allPts = {};
+  PLAYERS.forEach(p => {
+    allPts[p] = [];
+    ROUNDS.forEach((r, ri) => {
+      const cd = COURSE_DATA[ri];
+      const hcp = handicaps[p];
+      let total = 0;
+      scores[ri][p].forEach((s, hi) => {
+        total += stablefordPts(s, cd.par[hi], strokesOnHole(hcp, ri, hi));
+      });
+      allPts[p].push(total);
+    });
+  });
+  const sorted = [...PLAYERS].sort((a,b) => {
+    const ta = allPts[a].reduce((x,y)=>x+y,0);
+    const tb = allPts[b].reduce((x,y)=>x+y,0);
+    return tb - ta;
+  });
+  sorted.forEach(p => {
+    const grand = allPts[p].reduce((x,y)=>x+y,0);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${p}</td>${allPts[p].map(v => `<td>${v !== 0 ? v : '-'}</td>`).join('')}<td class="total-col">${grand || '-'}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+// ============================================================
+// SKINS
+// ============================================================
+function updateSkinsPot() {
+  const perHole = parseInt(document.getElementById('skins-per-hole')?.value) || 5;
+  document.getElementById('skins-pot').textContent = `Pot: $${perHole * 18 * 8}`;
+}
+
+function renderSkinsHoles() {
+  const ri = parseInt(document.getElementById('skins-round-select')?.value) || 0;
+  const wrap = document.getElementById('skins-holes');
+  if (!wrap) return;
+  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
+  for (let h = 0; h < 18; h++) {
+    const sel = skinsData[ri][h];
+    html += `<div style="background:var(--tan-pale);border-radius:8px;padding:8px 6px;">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:4px;">Hole ${h+1} · Par ${PAR[h]}</div>
+      <select style="width:100%;border:1px solid var(--sand);border-radius:4px;padding:4px;font-size:11px;background:var(--white);"
+        onchange="skinsData[${ri}][${h}]=this.value;renderSkinsResults()">
+        <option value="">-- Tie/TBD</option>
+        ${PLAYERS.map(p => `<option value="${p}" ${sel===p?'selected':''}>${p}</option>`).join('')}
+      </select>
+    </div>`;
+  }
+  html += '</div>';
+  wrap.innerHTML = html;
+  renderSkinsResults();
+  updateSkinsPot();
+}
+
+function renderSkinsResults() {
+  const ri = parseInt(document.getElementById('skins-round-select')?.value) || 0;
+  const perHole = parseInt(document.getElementById('skins-per-hole')?.value) || 5;
+  const totals = {};
+  PLAYERS.forEach(p => totals[p] = 0);
+  let carry = 0;
+  skinsData[ri].forEach((winner, h) => {
+    carry++;
+    if (winner) { totals[winner] += carry * perHole; carry = 0; }
+  });
+  const res = document.getElementById('skins-results');
+  if (!res) return;
+  const winners = PLAYERS.filter(p => totals[p] > 0).sort((a,b) => totals[b]-totals[a]);
+  if (!winners.length) { res.innerHTML = '<div class="empty">No skins recorded yet</div>'; return; }
+  res.innerHTML = '<div style="font-weight:600;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#888;">Round Results</div>' +
+    winners.map(p => `<div class="nassau-row"><span class="nassau-label">${p}</span><span class="nassau-val win">+$${totals[p]}</span></div>`).join('');
+}
+
+// ============================================================
+// NASSAU
+// ============================================================
+function renderNassau() {
+  const wrap = document.getElementById('nassau-rounds');
+  if (!wrap) return;
+  const amt = parseInt(document.getElementById('nassau-amt')?.value) || 20;
+  let html = '';
+  ROUNDS.forEach((r, ri) => {
+    html += `<div style="background:var(--tan-pale);border-radius:8px;padding:12px;margin-bottom:8px;">
+      <div style="font-weight:600;margin-bottom:8px;font-size:13px;">${r.short} · ${r.name}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${['Front 9','Back 9','Overall'].map((label, li) => `
+          <div style="background:var(--white);border-radius:6px;padding:8px;border:1px solid var(--sand);">
+            <div style="font-size:10px;color:#888;font-family:'DM Mono',monospace;margin-bottom:4px;">${label} · $${amt}</div>
+            <select style="width:100%;border:1px solid var(--sand);border-radius:4px;padding:4px;font-size:11px;background:var(--cream);">
+              <option value="">-- TBD</option>
+              ${PLAYERS.map(p => `<option>${p}</option>`).join('')}
+            </select>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+// ============================================================
+// MONEY TRACKER — with settlement / who owes who
+// ============================================================
+function renderMoney() {
+  // Build net balances from all transactions
+  const balances = {};
+  PLAYERS.forEach(p => balances[p] = 0);
+  transactions.forEach(t => {
+    balances[t.winner] += t.amount;
+    balances[t.loser]  -= t.amount;
+  });
+
+  // Header totals
+  const totalInPlay = transactions.reduce((a,t) => a + t.amount, 0);
+  document.getElementById('total-in-play').textContent = '$' + totalInPlay.toLocaleString();
+
+  // Standings leaderboard
+  const sorted = [...PLAYERS].sort((a,b) => balances[b] - balances[a]);
+  const rankColors = ['gold','silver','bronze','','','','',''];
+  const lb = document.getElementById('money-leaderboard');
+  lb.innerHTML = sorted.map((p, i) => {
+    const v = balances[p];
+    return `<div class="leaderboard-row">
+      <div class="lb-rank ${rankColors[i]}">${i+1}</div>
+      <div class="lb-name">${p}</div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:80px;height:6px;border-radius:3px;background:var(--sand);overflow:hidden;">
+          <div style="height:100%;width:${Math.min(100,Math.abs(v)/Math.max(1,...Object.values(balances).map(Math.abs))*100)}%;background:${v>=0?'var(--green-mid)':'var(--red)'};border-radius:3px;"></div>
+        </div>
+        <div class="lb-money ${v>=0?'positive':''}">${v>=0?'+':'-'}$${Math.abs(v)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Settlement — minimum transactions algorithm
+  renderSettlement(balances);
+
+  // Transaction log
+  const log = document.getElementById('txn-log');
+  document.getElementById('txn-count').textContent = transactions.length + ' entries';
+  if (!transactions.length) { log.innerHTML = '<div class="empty">No transactions yet</div>'; return; }
+  log.innerHTML = [...transactions].reverse().map((t, i) => `
+    <div class="transaction-row">
+      <div class="txn-icon win">💰</div>
+      <div class="txn-info">
+        <div class="txn-desc">${t.winner} ← ${t.loser}</div>
+        <div class="txn-meta">${t.game}${t.notes ? ' · ' + t.notes : ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div class="txn-amt pos">+$${t.amount}</div>
+        <button onclick="deleteTxn(${transactions.length - 1 - i})" style="background:none;border:none;color:#ccc;font-size:16px;cursor:pointer;padding:2px 4px;">×</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderSettlement(balances) {
+  const wrap = document.getElementById('settlement-section');
+  if (!wrap) return;
+
+  // Minimum transactions settlement algorithm
+  const pos = []; // creditors: {player, amount}
+  const neg = []; // debtors: {player, amount}
+  PLAYERS.forEach(p => {
+    const v = balances[p];
+    if (v > 0) pos.push({ player: p, amount: v });
+    else if (v < 0) neg.push({ player: p, amount: -v });
+  });
+  pos.sort((a,b) => b.amount - a.amount);
+  neg.sort((a,b) => b.amount - a.amount);
+
+  const settlements = [];
+  let pi = 0, ni = 0;
+  const pc = pos.map(x => ({...x}));
+  const nc = neg.map(x => ({...x}));
+  while (pi < pc.length && ni < nc.length) {
+    const amt = Math.min(pc[pi].amount, nc[ni].amount);
+    if (amt > 0) {
+      settlements.push({ from: nc[ni].player, to: pc[pi].player, amount: amt });
+    }
+    pc[pi].amount -= amt;
+    nc[ni].amount -= amt;
+    if (pc[pi].amount === 0) pi++;
+    if (nc[ni].amount === 0) ni++;
+  }
+
+  if (!settlements.length) {
+    wrap.innerHTML = '<div class="empty">No settlements needed yet</div>';
+    return;
+  }
+
+  wrap.innerHTML = settlements.map(s => `
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--tan-pale);border-radius:10px;margin-bottom:8px;">
+      <div style="flex:1;">
+        <div style="font-weight:600;font-size:14px;color:var(--red);">${s.from}</div>
+        <div style="font-size:11px;color:#888;font-family:'DM Mono',monospace;">pays</div>
+      </div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--green);">$${s.amount}</div>
+      <div style="font-size:20px;">→</div>
+      <div style="flex:1;text-align:right;">
+        <div style="font-weight:600;font-size:14px;color:var(--green-mid);">${s.to}</div>
+        <div style="font-size:11px;color:#888;font-family:'DM Mono',monospace;">receives</div>
+      </div>
+    </div>`).join('');
+}
+
+function deleteTxn(idx) {
+  if (!confirm('Delete this transaction?')) return;
+  transactions.splice(idx, 1);
+  renderMoney();
+}
+
+function openTxnModal() {
+  const modal = document.getElementById('txn-modal');
+  const winSel = document.getElementById('txn-winner');
+  const loseSel = document.getElementById('txn-loser');
+  winSel.innerHTML = PLAYERS.map(p => `<option>${p}</option>`).join('');
+  loseSel.innerHTML = PLAYERS.map(p => `<option>${p}</option>`).join('');
+  loseSel.selectedIndex = 1;
+  modal.classList.add('open');
+}
+
+function closeTxnModal() {
+  document.getElementById('txn-modal').classList.remove('open');
+}
+
+function saveTxn() {
+  const winner = document.getElementById('txn-winner').value;
+  const loser = document.getElementById('txn-loser').value;
+  const amount = parseInt(document.getElementById('txn-amount').value);
+  const game = document.getElementById('txn-game').value;
+  const notes = document.getElementById('txn-notes').value;
+  if (!amount || winner === loser) { alert('Check winner/loser and amount'); return; }
+  transactions.push({ winner, loser, amount, game, notes, ts: Date.now() });
+  closeTxnModal();
+  renderMoney();
+}
+
+// ============================================================
+// COSTS
+// ============================================================
+function renderCosts() {
+  // Trip cost table
+  buildCostTable();
+
+  // Gambling P&L from transactions
+  const balances = {};
+  PLAYERS.forEach(p => balances[p] = 0);
+  transactions.forEach(t => {
+    balances[t.winner] += t.amount;
+    balances[t.loser]  -= t.amount;
+  });
+
+  const gs = document.getElementById('costs-gambling-summary');
+  if (gs) {
+    if (!transactions.length) {
+      gs.innerHTML = '<div class="empty">No gambling transactions recorded yet</div>';
+    } else {
+      const sorted = [...PLAYERS].sort((a,b) => balances[b] - balances[a]);
+      gs.innerHTML = sorted.map(p => {
+        const v = balances[p];
+        return `<div class="caddy-row">
+          <span style="font-weight:600">${p}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:${v >= 0 ? 'var(--green-mid)' : 'var(--red)'};">${v >= 0 ? '+' : ''}$${Math.abs(v)}</span>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // All-in total: trip net + gambling
+  const allin = document.getElementById('costs-allin');
+  if (allin) {
+    const rows = PLAYERS.map(p => {
+      const c = COSTS[p];
+      const tripNet = c.greens + c.caddy + c.deposit;
+      const gamble = balances[p] || 0;
+      const total = tripNet - gamble; // subtract winnings (they offset cost), add losses
+      return { p, tripNet, gamble, total };
+    }).sort((a,b) => b.total - a.total);
+
+    // header
+    let html = `<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;font-family:'DM Mono',monospace;font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1px;padding:0 0 8px;border-bottom:1px solid var(--sand);margin-bottom:8px;">
+      <span>Player</span><span style="text-align:right;">Trip</span><span style="text-align:right;">Gambling</span><span style="text-align:right;">All-In</span>
+    </div>`;
+
+    rows.forEach(({p, tripNet, gamble, total}) => {
+      const gambleStr = gamble === 0 ? '$0' : (gamble > 0 ? '-$' + gamble : '+$' + Math.abs(gamble));
+      const gambleColor = gamble > 0 ? 'var(--green-mid)' : gamble < 0 ? 'var(--red)' : '#888';
+      html += `<div style="display:grid;grid-template-columns:1fr auto auto auto;gap:4px;align-items:center;padding:8px 0;border-bottom:1px solid var(--sand);">
+        <span style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;">${p}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;text-align:right;">$${tripNet.toLocaleString()}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:12px;text-align:right;color:${gambleColor};">${gambleStr}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;font-weight:700;text-align:right;color:var(--green);">$${total.toLocaleString()}</span>
+      </div>`;
+    });
+    allin.innerHTML = html;
+  }
+
+  // Update range badge
+  const nets = PLAYERS.map(p => {
+    const c = COSTS[p];
+    return c.greens + c.caddy + c.deposit - (balances[p] || 0);
+  });
+  const rangeEl = document.getElementById('costs-range');
+  if (rangeEl && transactions.length) {
+    rangeEl.textContent = '$' + Math.min(...nets).toLocaleString() + '–' + Math.max(...nets).toLocaleString();
+  } else if (rangeEl) {
+    const tripNets = PLAYERS.map(p => { const c = COSTS[p]; return c.greens + c.caddy + c.deposit; });
+    rangeEl.textContent = '$' + Math.min(...tripNets).toLocaleString() + '–' + Math.max(...tripNets).toLocaleString();
+  }
+}
+
+// ============================================================
+// CADDIES
+// ============================================================
+const ROUND_LABELS = ['Bandon Dunes','Sheep Ranch','Old Mac','Trails','Preserve','Pac Dunes'];
+const ROUND_SHORT  = ['R1','R2','R3','R4','Pres','R5'];
+
+let caddyView = 'round';
+function setCaddyView(v, btn) {
+  caddyView = v;
+  document.querySelectorAll('#section-caddies .round-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('caddy-by-round').style.display  = v === 'round'  ? '' : 'none';
+  document.getElementById('caddy-by-player').style.display = v === 'player' ? '' : 'none';
+}
+
+function typeColor(t) {
+  if (t === 'Carry') return { bg:'var(--green)', color:'white' };
+  if (t === 'Group') return { bg:'var(--blue)', color:'white' };
+  return { bg:'var(--sand)', color:'#888' };
+}
+
+function renderCaddies() {
+  // ---- BY ROUND: matrix of rounds × players ----
+  const roundWrap = document.getElementById('caddy-by-round');
+  if (roundWrap) {
+    let html = '';
+    ROUND_LABELS.forEach((rLabel, ri) => {
+      html += `<div class="card" style="margin-bottom:10px;padding:12px 10px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <span class="round-badge ${['','sheep','oldmac','trails','preserve','pac'][ri]}" style="margin-bottom:0;">${ROUND_SHORT[ri]}</span>
+          <span style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--green);">${rLabel}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">`;
+      PLAYERS.forEach(p => {
+        const type = CADDY_SCHEDULE[p][ri];
+        const { bg, color } = typeColor(type);
+        html += `<div style="display:flex;align-items:center;justify-content:space-between;background:var(--tan-pale);border-radius:8px;padding:8px 10px;">
+          <span style="font-weight:600;font-size:13px;">${p}</span>
+          <span style="background:${bg};color:${color};font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:500;">${type}</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    });
+    roundWrap.innerHTML = html;
+  }
+
+  // ---- BY PLAYER: each player's schedule across rounds ----
+  const playerWrap = document.getElementById('caddy-by-player');
+  if (playerWrap) {
+    let html = '';
+    PLAYERS.forEach(p => {
+      const c = COSTS[p];
+      html += `<div class="card" style="margin-bottom:10px;padding:12px 10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <span style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--green);">${p}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--red);font-weight:600;">$${c.caddy} total</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">`;
+      CADDY_SCHEDULE[p].forEach((type, ri) => {
+        const { bg, color } = typeColor(type);
+        html += `<div style="border-radius:8px;padding:8px 6px;background:var(--tan-pale);text-align:center;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;margin-bottom:4px;">${ROUND_SHORT[ri]}</div>
+          <div style="font-size:10px;color:#666;margin-bottom:5px;">${ROUND_LABELS[ri]}</div>
+          <span style="background:${bg};color:${color};font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;display:inline-block;">${type}</span>
+        </div>`;
+      });
+      html += `</div></div>`;
+    });
+    playerWrap.innerHTML = html;
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+buildPairMatrix();
+buildPlayers();
+
+document.addEventListener('DOMContentLoaded', () => {
+  const w = document.getElementById('txn-winner');
+  const l = document.getElementById('txn-loser');
+  if (w) w.innerHTML = PLAYERS.map(p => `<option>${p}</option>`).join('');
+  if (l) l.innerHTML = PLAYERS.map(p => `<option>${p}</option>`).join('');
+});
+</script>
+</body>
+</html>
