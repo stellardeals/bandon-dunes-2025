@@ -1252,6 +1252,13 @@
               <option value="4">Round 5 — Pac Dunes</option>
             </select>
           </div>
+          <div>
+            <label class="form-label">Group</label>
+            <select class="form-input" id="skins-group-select" onchange="renderSkinsHoles()">
+              <option value="0">Group 1 (early)</option>
+              <option value="1">Group 2 (late)</option>
+            </select>
+          </div>
         </div>
         <div id="skins-holes"></div>
         <div id="skins-results" style="margin-top:12px;"></div>
@@ -1283,7 +1290,7 @@
         <div class="game-pot">By hole · net</div>
       </div>
       <div class="game-body">
-        <div class="game-desc">Group 1 vs Group 2 each round. Net match play hole by hole — lowest net score in the group wins the hole for their team. Tap each hole to record the result.</div>
+        <div class="game-desc">Group 1 vs Group 2 each round. Each hole: the lowest 3 net scores from each team of 4 are summed — lowest sum wins the hole. Scores pull automatically from the scorecard.</div>
         <div class="form-row" style="margin-bottom:12px;">
           <div>
             <label class="form-label">Round</label>
@@ -1302,13 +1309,16 @@
     </div>
 
     <!-- 2-Man Scramble Old Mac -->
-    <div class="game-card">
+    <div class="game-card" style="border:2px dashed #a0522d;opacity:0.92;">
       <div class="game-header" style="background:#7a3d2d;">
         <div class="game-title">🌀 2-Man Scramble — Old Mac</div>
-        <div class="game-pot" style="font-size:11px;">R3 · Fri Jun 5</div>
+        <div class="game-pot" style="font-size:11px;">R3 · Fri Jun 5 · Optional</div>
       </div>
       <div class="game-body">
-        <div class="game-desc">Both partners hit from the tee, pick the best ball, both play from that spot — repeat until holed. Teams of 2 within each group. Vote below on whether you want to play this format on Old Mac, and your preferred stakes if it's a go.</div>
+        <div style="background:#fff3e0;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-family:'DM Mono',monospace;font-size:11px;color:#a0522d;font-weight:600;letter-spacing:0.5px;">
+          ⚠️ IF YOU WANT TO DO THIS — vote below. Needs majority to play.
+        </div>
+        <div class="game-desc">Both partners hit, pick the best ball, both play from that spot — repeat until holed. Pairs of 2 within each group. Vote yes/no first; stakes only matter if it's a go.</div>
         <div id="scramble-play-vote"></div>
         <div id="votes-scramble"></div>
       </div>
@@ -1321,7 +1331,7 @@
         <div class="game-pot">By hole · net</div>
       </div>
       <div class="game-body">
-        <div class="game-desc">Within each group of 4, two pairs go head-to-head. Best net score from each pair wins the hole. Select the round and group, then tap holes to record results.</div>
+        <div class="game-desc">Within each group of 4, two pairs go head-to-head. Best net score from each pair wins the hole. Tied holes are broken by the 2nd listed player's net score. Scores pull automatically from the scorecard.</div>
         <div class="form-row" style="margin-bottom:12px;">
           <div>
             <label class="form-label">Round</label>
@@ -2040,20 +2050,50 @@ function updateSkinsPot() {
   document.getElementById('skins-pot').textContent = `Pot: $${perHole * 18 * 8}`;
 }
 
+function computeSkinWinnersForGroup(players, ri) {
+  const result = new Array(18).fill('');
+  for (let h = 0; h < 18; h++) {
+    const nets = players.map(p => {
+      const g = scores[ri] && scores[ri][p] ? scores[ri][p][h] : '';
+      if (g === '' || g === null || g === undefined) return null;
+      return { p, n: parseInt(g) - strokesOnHole(handicaps[p], ri, h) };
+    }).filter(Boolean);
+    if (!nets.length) continue;
+    const best = Math.min(...nets.map(x => x.n));
+    const w = nets.filter(x => x.n === best);
+    if (w.length === 1) result[h] = w[0].p;
+  }
+  return result;
+}
+
 function renderSkinsHoles() {
-  const ri = parseInt(document.getElementById('skins-round-select')?.value) || 0;
+  const ri  = parseInt(document.getElementById('skins-round-select')?.value) || 0;
+  const gi  = parseInt(document.getElementById('skins-group-select')?.value || '0');
+  const grp = GROUPS_PER_ROUND[ri][gi];
   const wrap = document.getElementById('skins-holes');
   if (!wrap) return;
-  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
+
+  const winners = computeSkinWinnersForGroup(grp, ri);
+  let carry = 0;
+  let html = '<div style="font-size:11px;color:#888;margin-bottom:8px;font-family:\'DM Mono\',monospace;text-align:center;">'
+    + grp.join(' · ') + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
+
   for (let h = 0; h < 18; h++) {
-    const sel = skinsData[ri][h];
-    html += `<div style="background:var(--tan-pale);border-radius:8px;padding:8px 6px;">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:4px;">Hole ${h+1} · Par ${COURSE_DATA[ri].par[h]}</div>
-      <select style="width:100%;border:1px solid var(--sand);border-radius:4px;padding:4px;font-size:11px;background:var(--white);"
-        onchange="skinsData[${ri}][${h}]=this.value;renderSkinsResults()">
-        <option value="">-- Tie/TBD</option>
-        ${PLAYERS.map(p => `<option value="${p}" ${sel===p?'selected':''}>${p}</option>`).join('')}
-      </select>
+    carry++;
+    const w = winners[h];
+    const isWon = !!w;
+    if (isWon) carry = 0;
+    const nets = grp.map(p => {
+      const g = scores[ri] && scores[ri][p] ? scores[ri][p][h] : '';
+      if (g === '' || g === null || g === undefined) return null;
+      return parseInt(g) - strokesOnHole(handicaps[p], ri, h);
+    });
+    const hasScores = nets.some(n => n !== null);
+    html += `<div style="background:${isWon ? '#e8f5e9' : 'var(--tan-pale)'};border-radius:8px;padding:8px 6px;border:1px solid ${isWon ? 'var(--green-mid)' : 'transparent'};">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:3px;">Hole ${h+1} · Par ${COURSE_DATA[ri].par[h]}</div>
+      <div style="font-size:12px;font-weight:700;color:${isWon ? 'var(--green)' : '#aaa'};">${isWon ? w : (hasScores ? 'Tie — carry' : '—')}</div>
+      <div style="font-size:9px;color:#bbb;margin-top:2px;">${grp.map((p,i) => nets[i]!==null ? p[0]+':'+nets[i] : '').filter(Boolean).join(' ')}</div>
     </div>`;
   }
   html += '</div>';
@@ -2062,46 +2102,80 @@ function renderSkinsHoles() {
   updateSkinsPot();
 }
 
+function updateSkinsGroupSelect() {
+  renderSkinsHoles();
+}
+
 function renderSkinsResults() {
   const ri = parseInt(document.getElementById('skins-round-select')?.value) || 0;
+  const gi = parseInt(document.getElementById('skins-group-select')?.value || '0');
   const perHole = parseInt(document.getElementById('skins-per-hole')?.value) || 5;
+  const grp = GROUPS_PER_ROUND[ri][gi];
+  const winners = computeSkinWinnersForGroup(grp, ri);
   const totals = {};
   PLAYERS.forEach(p => totals[p] = 0);
   let carry = 0;
-  skinsData[ri].forEach((winner, h) => {
+  winners.forEach(w => {
     carry++;
-    if (winner) { totals[winner] += carry * perHole; carry = 0; }
+    if (w) { totals[w] += carry * perHole; carry = 0; }
   });
   const res = document.getElementById('skins-results');
   if (!res) return;
-  const winners = PLAYERS.filter(p => totals[p] > 0).sort((a,b) => totals[b]-totals[a]);
-  if (!winners.length) { res.innerHTML = '<div class="empty">No skins recorded yet</div>'; return; }
-  res.innerHTML = '<div style="font-weight:600;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#888;">Round Results</div>' +
-    winners.map(p => `<div class="nassau-row"><span class="nassau-label">${p}</span><span class="nassau-val win">+$${totals[p]}</span></div>`).join('');
+  const top = grp.filter(p => totals[p] > 0).sort((a,b) => totals[b]-totals[a]);
+  if (!top.length) { res.innerHTML = '<div class="empty">No skins yet — enter scores first</div>'; return; }
+  res.innerHTML = '<div style="font-weight:600;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#888;">Group Results</div>' +
+    top.map(p => `<div class="nassau-row"><span class="nassau-label">${p}</span><span class="nassau-val win">+$${totals[p]}</span></div>`).join('');
 }
 
 // ============================================================
 // NASSAU
 // ============================================================
+function nassauGroupWinner(players, ri, holes) {
+  const totals = players.map(p => {
+    const nets = holes.map(h => {
+      const g = scores[ri] && scores[ri][p] ? scores[ri][p][h] : '';
+      if (g === '' || g === null || g === undefined) return null;
+      return parseInt(g) - strokesOnHole(handicaps[p], ri, h);
+    });
+    if (nets.some(n => n === null)) return null;
+    return { p, total: nets.reduce((a,b) => a+b, 0) };
+  }).filter(Boolean);
+  if (!totals.length) return { name: '—', detail: 'Enter scores' };
+  const best = Math.min(...totals.map(x => x.total));
+  const w = totals.filter(x => x.total === best);
+  const detail = totals.map(x => x.p[0]+':'+x.total).join(' ');
+  return { name: w.length === 1 ? w[0].p : 'Tied', detail };
+}
+
 function renderNassau() {
   const wrap = document.getElementById('nassau-rounds');
   if (!wrap) return;
   const amt = parseInt(document.getElementById('nassau-amt')?.value) || 20;
+  const segments = [
+    { label: 'Front 9',  holes: Array.from({length:9},(_,i)=>i)   },
+    { label: 'Back 9',   holes: Array.from({length:9},(_,i)=>i+9) },
+    { label: 'Overall',  holes: Array.from({length:18},(_,i)=>i)  },
+  ];
   let html = '';
   ROUNDS.forEach((r, ri) => {
     html += `<div style="background:var(--tan-pale);border-radius:8px;padding:12px;margin-bottom:8px;">
-      <div style="font-weight:600;margin-bottom:8px;font-size:13px;">${r.short} · ${r.name}</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        ${['Front 9','Back 9','Overall'].map((label, li) => `
-          <div style="background:var(--white);border-radius:6px;padding:8px;border:1px solid var(--sand);">
-            <div style="font-size:10px;color:#888;font-family:'DM Mono',monospace;margin-bottom:4px;">${label} · $${amt}</div>
-            <select style="width:100%;border:1px solid var(--sand);border-radius:4px;padding:4px;font-size:11px;background:var(--cream);">
-              <option value="">-- TBD</option>
-              ${PLAYERS.map(p => `<option>${p}</option>`).join('')}
-            </select>
-          </div>`).join('')}
-      </div>
-    </div>`;
+      <div style="font-weight:600;margin-bottom:8px;font-size:13px;">${r.short} · ${r.name}</div>`;
+    [0,1].forEach(gi => {
+      const grp = GROUPS_PER_ROUND[ri][gi];
+      html += `<div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Group ${gi+1}: ${grp.join(' · ')}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">`;
+      segments.forEach(seg => {
+        const res = nassauGroupWinner(grp, ri, seg.holes);
+        const isSet = res.name !== '—' && res.name !== 'Tied';
+        html += `<div style="background:${isSet?'#e8f5e9':'var(--white)'};border-radius:6px;padding:8px;border:1px solid ${isSet?'var(--green-mid)':'var(--sand)'};">
+          <div style="font-size:10px;color:#888;font-family:'DM Mono',monospace;margin-bottom:4px;">${seg.label} · $${amt}</div>
+          <div style="font-size:13px;font-weight:700;color:${isSet?'var(--green)':res.name==='Tied'?'var(--gold)':'#bbb'};">${res.name}</div>
+          <div style="font-size:9px;color:#bbb;margin-top:2px;">${res.detail}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    });
+    html += `</div>`;
   });
   wrap.innerHTML = html;
 }
@@ -2392,13 +2466,16 @@ function renderCaddies() {
 // ============================================================
 // VOTING SYSTEM
 // ============================================================
-const VOTE_AMOUNTS = [1, 2, 5, 10, 20, 25, 50];
+const VOTE_AMOUNTS = [1, 2, 5, 10, 20, 25, 50, 75, 100, 101];
+function fmtAmt(a) { return a === 101 ? '>$100' : '$' + a; }
 const GAME_IDS = ['stableford','skins','nassau','four-v-four','two-v-two','scramble'];
 
-function loadVotes()  { try { return JSON.parse(localStorage.getItem('bdVotes')  || '{}'); } catch { return {}; } }
-function saveVotes(v) { localStorage.setItem('bdVotes',  JSON.stringify(v)); }
-function loadFinals() { try { return JSON.parse(localStorage.getItem('bdFinals') || '{}'); } catch { return {}; } }
-function saveFinals(f){ localStorage.setItem('bdFinals', JSON.stringify(f)); }
+function loadVotes()      { try { return JSON.parse(localStorage.getItem('bdVotes')      || '{}'); } catch { return {}; } }
+function saveVotes(v)     { localStorage.setItem('bdVotes',      JSON.stringify(v)); }
+function loadFinals()     { try { return JSON.parse(localStorage.getItem('bdFinals')     || '{}'); } catch { return {}; } }
+function saveFinals(f)    { localStorage.setItem('bdFinals',     JSON.stringify(f)); }
+function loadPlayVotes()  { try { return JSON.parse(localStorage.getItem('bdPlayVotes')  || '{}'); } catch { return {}; } }
+function savePlayVotes(v) { localStorage.setItem('bdPlayVotes',  JSON.stringify(v)); }
 
 function castVote(gameId) {
   const player = document.getElementById('vp-' + gameId).value;
@@ -2408,6 +2485,17 @@ function castVote(gameId) {
   if (!v[gameId]) v[gameId] = {};
   v[gameId][player] = amount;
   saveVotes(v);
+  renderVoteSection(gameId);
+}
+
+function castPlayVote(gameId) {
+  const player = document.getElementById('vpname-' + gameId).value;
+  const choice = document.getElementById('vpyn-' + gameId).value;
+  if (!player || !choice) return;
+  const v = loadPlayVotes();
+  if (!v[gameId]) v[gameId] = {};
+  v[gameId][player] = choice;
+  savePlayVotes(v);
   renderVoteSection(gameId);
 }
 
@@ -2427,24 +2515,66 @@ function toggleAdminRow(gameId) {
 function renderVoteSection(gameId) {
   const wrap = document.getElementById('votes-' + gameId);
   if (!wrap) return;
-  const allVotes = loadVotes()[gameId] || {};
-  const finals   = loadFinals();
-  const finalVal = finals[gameId];
-  const voteCount = Object.keys(allVotes).length;
+  const allVotes   = loadVotes()[gameId]     || {};
+  const playVotes  = loadPlayVotes()[gameId] || {};
+  const finals     = loadFinals();
+  const finalVal   = finals[gameId];
+  const stakeCount = Object.keys(allVotes).length;
 
-  // tally by amount
+  // — Play vote (yes/no) —
+  const yesPlayers = PLAYERS.filter(p => playVotes[p] === 'yes');
+  const noPlayers  = PLAYERS.filter(p => playVotes[p] === 'no');
+  const playVoted  = new Set(Object.keys(playVotes));
+  const playUnvoted = PLAYERS.filter(p => !playVoted.has(p));
+
+  let html = `<div class="vote-section">`;
+
+  if (gameId !== 'scramble') {
+    html += `<div class="vote-header">
+      <span class="vote-title-lbl">Vote to Play?</span>
+      <span class="vote-count-lbl">${playVoted.size}/8 voted</span>
+    </div>
+    <div class="vote-input-row" style="margin-bottom:8px;">
+      <select class="vote-sel" id="vpname-${gameId}">
+        <option value="">Your name</option>
+        ${playUnvoted.map(p => `<option>${p}</option>`).join('')}
+        ${playVoted.size ? `<optgroup label="── voted ──">${[...playVoted].map(p => `<option value="${p}">${p} (${playVotes[p]})</option>`).join('')}</optgroup>` : ''}
+      </select>
+      <select class="vote-sel" id="vpyn-${gameId}">
+        <option value="">Yes / No</option>
+        <option value="yes">Yes ✅</option>
+        <option value="no">No ❌</option>
+      </select>
+      <button class="vote-submit" onclick="castPlayVote('${gameId}')">Vote</button>
+    </div>`;
+
+    if (playVoted.size > 0) {
+      html += `<div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;background:#e8f5e9;border-radius:6px;padding:8px;text-align:center;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Yes</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--green);">${yesPlayers.length}</div>
+          <div style="font-size:9px;color:#aaa;">${yesPlayers.join(', ') || '—'}</div>
+        </div>
+        <div style="flex:1;background:#fce4ec;border-radius:6px;padding:8px;text-align:center;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">No</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--red);">${noPlayers.length}</div>
+          <div style="font-size:9px;color:#aaa;">${noPlayers.join(', ') || '—'}</div>
+        </div>
+      </div>`;
+    }
+  }
+
+  // — Stakes vote —
   const tally = {};
   VOTE_AMOUNTS.forEach(a => tally[a] = []);
   Object.entries(allVotes).forEach(([p, a]) => { if (!tally[a]) tally[a] = []; tally[a].push(p); });
   const maxV = Math.max(1, ...Object.values(tally).map(a => a.length));
+  const votedSet  = new Set(Object.keys(allVotes));
+  const unvoted   = PLAYERS.filter(p => !votedSet.has(p));
 
-  const votedSet = new Set(Object.keys(allVotes));
-  const unvoted  = PLAYERS.filter(p => !votedSet.has(p));
-
-  let html = `<div class="vote-section">
-    <div class="vote-header">
-      <span class="vote-title-lbl">Vote on Stakes</span>
-      <span class="vote-count-lbl">${voteCount}/8 voted</span>
+  html += `<div class="vote-header" style="margin-top:4px;">
+      <span class="vote-title-lbl">Preferred Stakes</span>
+      <span class="vote-count-lbl">${stakeCount}/8 voted</span>
     </div>
     <div class="vote-input-row">
       <select class="vote-sel" id="vp-${gameId}">
@@ -2454,19 +2584,19 @@ function renderVoteSection(gameId) {
       </select>
       <select class="vote-sel" id="va-${gameId}">
         <option value="">$?</option>
-        ${VOTE_AMOUNTS.map(a => `<option value="${a}">$${a}</option>`).join('')}
+        ${VOTE_AMOUNTS.map(a => `<option value="${a}">${fmtAmt(a)}</option>`).join('')}
       </select>
       <button class="vote-submit" onclick="castVote('${gameId}')">Vote</button>
     </div>`;
 
-  if (voteCount > 0) {
+  if (stakeCount > 0) {
     html += `<div class="vote-bars">`;
     VOTE_AMOUNTS.forEach(amt => {
       const voters = tally[amt] || [];
       if (!voters.length) return;
       const pct = (voters.length / maxV) * 100;
       html += `<div class="vote-bar-row">
-        <div class="vote-bar-lbl">$${amt}</div>
+        <div class="vote-bar-lbl">${fmtAmt(amt)}</div>
         <div class="vote-bar-track"><div class="vote-bar-fill" style="width:${pct}%"></div></div>
         <div class="vote-names-lbl">${voters.join(', ')}</div>
       </div>`;
@@ -2477,7 +2607,7 @@ function renderVoteSection(gameId) {
   if (finalVal) {
     html += `<div class="vote-final">
       <span class="vote-final-lbl">Final Stakes Set</span>
-      <span class="vote-final-val">$${finalVal}</span>
+      <span class="vote-final-val">${fmtAmt(finalVal)}</span>
     </div>`;
   }
 
