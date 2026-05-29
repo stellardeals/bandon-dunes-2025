@@ -729,6 +729,23 @@
     border: none; border-radius: 10px; padding: 12px 16px;
     font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
   }
+  /* Fun Stats */
+  .fun-award { background:var(--tan-pale);border-radius:10px;padding:12px 14px;margin-bottom:8px; }
+  .fun-award-header { display:flex;align-items:center;gap:8px;margin-bottom:6px; }
+  .fun-award-emoji { font-size:22px;line-height:1; }
+  .fun-award-title { font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--green); }
+  .fun-award-sub { font-size:11px;color:#aaa;font-family:'DM Mono',monospace; }
+  .fun-award-row { display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--sand);font-size:13px; }
+  .fun-award-row:last-child { border-bottom:none; }
+  .fun-award-val { font-family:'DM Mono',monospace;font-size:12px;font-weight:600;color:var(--green); }
+  .fun-award-val.bad { color:var(--red); }
+  .fun-eagle-flash { position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.75);z-index:999;animation:eagleFadeOut 3s forwards; }
+  .fun-eagle-inner { font-size:72px;animation:eagleBounce 0.4s ease infinite alternate; }
+  .fun-eagle-txt { font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:gold;text-shadow:0 0 20px gold;margin-top:12px; }
+  .fun-eagle-sub { font-size:14px;color:#fff;margin-top:6px;font-family:'DM Mono',monospace; }
+  @keyframes eagleFadeOut { 0%{opacity:1} 70%{opacity:1} 100%{opacity:0;pointer-events:none} }
+  @keyframes eagleBounce  { from{transform:scale(1) rotate(-5deg)} to{transform:scale(1.15) rotate(5deg)} }
+
   .scan-card-btn {
     width: 100%; background: var(--green); color: var(--white);
     border: none; border-radius: 12px; padding: 14px 16px;
@@ -1231,6 +1248,14 @@
 
     <div class="score-round-select" id="score-round-select"></div>
     <div id="scorecard-body"></div>
+
+    <!-- Fun Stats Easter Egg Panel -->
+    <div style="margin-top:16px;">
+      <button onclick="toggleFunStats(this)" style="width:100%;background:var(--tan-pale);border:2px dashed var(--sand);border-radius:12px;padding:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--green);cursor:pointer;text-align:left;">
+        🎉 Fun Stats &amp; Awards <span style="font-size:11px;font-weight:400;color:#aaa;float:right;margin-top:2px;">tap to reveal</span>
+      </button>
+      <div id="fun-stats-panel" style="display:none;margin-top:4px;"></div>
+    </div>
   </div>
 
   <!-- BETTING -->
@@ -2057,7 +2082,10 @@ function renderScorecard() {
 }
 
 function saveScore(round, player, hole, val) {
-  scores[round][player][hole] = val === '' ? '' : parseInt(val);
+  const gross = val === '' ? '' : parseInt(val);
+  scores[round][player][hole] = gross;
+  if (gross !== '') checkEagleAlert(player, round, hole, gross);
+  if (document.getElementById('fun-stats-panel')?.style.display !== 'none') renderFunStats();
 }
 
 // ============================================================
@@ -2822,6 +2850,224 @@ function endTour() {
   localStorage.setItem('bdTourDone','1');
   // Go back to schedule
   showSection('schedule', document.querySelector('.nav-btn'));
+}
+
+// ============================================================
+// FUN STATS & EASTER EGGS
+// ============================================================
+let eagleFlashShown = new Set(); // track which eagles we've already celebrated
+
+function toggleFunStats(btn) {
+  const panel = document.getElementById('fun-stats-panel');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : '';
+  btn.querySelector('span').textContent = isOpen ? 'tap to reveal' : 'tap to hide';
+  if (!isOpen) renderFunStats();
+}
+
+function getNetScore(p, ri, h) {
+  const g = scores[ri] && scores[ri][p] ? scores[ri][p][h] : '';
+  if (g === '' || g === null || g === undefined) return null;
+  return parseInt(g) - strokesOnHole(handicaps[p], ri, h);
+}
+
+function getGrossScore(p, ri, h) {
+  const g = scores[ri] && scores[ri][p] ? scores[ri][p][h] : '';
+  if (g === '' || g === null || g === undefined) return null;
+  return parseInt(g);
+}
+
+function renderFunStats() {
+  const panel = document.getElementById('fun-stats-panel');
+  if (!panel || panel.style.display === 'none') return;
+
+  // ── Collect all data across all rounds/holes/players ──
+  const tripleCount  = {}; // player → count of triple bogey+
+  const snowmanCount = {}; // player → count of exact 8s
+  const dalyCount    = {}; // player → count of 10+
+  const birdieCount  = {}; // player → total birdies
+  const eagleList    = []; // {player, round, hole, gross}
+  const bogeyTrains  = []; // {player, round, length, startHole}
+  const blowups      = []; // {player, round, frontNet, backNet, diff}
+  const sandbagger   = []; // {player, round, netTotal, expectedStrokes}
+
+  PLAYERS.forEach(p => { tripleCount[p]=0; snowmanCount[p]=0; dalyCount[p]=0; birdieCount[p]=0; });
+
+  ROUNDS.forEach((r, ri) => {
+    PLAYERS.forEach(p => {
+      let streak = 0, streakStart = 0;
+      let frontNet = 0, backNet = 0, frontCount = 0, backCount = 0;
+      let netTotal = 0, holeCount = 0;
+
+      for (let h = 0; h < 18; h++) {
+        const gross = getGrossScore(p, ri, h);
+        const par   = COURSE_DATA[ri].par[h];
+        if (gross === null) { streak = 0; continue; }
+
+        const diff = gross - par;
+        const net  = getNetScore(p, ri, h);
+
+        // Triple bogey+
+        if (diff >= 3) tripleCount[p]++;
+        // Snowman (8)
+        if (gross === 8) snowmanCount[p]++;
+        // The Daly (10+)
+        if (gross >= 10) dalyCount[p]++;
+        // Birdie or better (net)
+        if (net !== null && net <= par - 1) birdieCount[p]++;
+        // Eagle (gross ≤ par-2)
+        if (diff <= -2) eagleList.push({ player:p, round:ri, hole:h, gross, par });
+        // Bogey train (gross = par+1 exactly)
+        if (diff === 1) {
+          if (streak === 0) streakStart = h;
+          streak++;
+        } else {
+          if (streak >= 4) bogeyTrains.push({ player:p, round:ri, length:streak, startHole:streakStart });
+          streak = 0;
+        }
+        // Front/back split
+        if (h < 9)  { frontNet += net !== null ? net : 0; if(net!==null) frontCount++; }
+        else         { backNet  += net !== null ? net : 0; if(net!==null) backCount++;  }
+        // Net total
+        if (net !== null) { netTotal += net; holeCount++; }
+      }
+      if (streak >= 4) bogeyTrains.push({ player:p, round:ri, length:streak, startHole:streakStart });
+
+      // Back 9 blowup — only if both nines have ≥7 holes scored
+      if (frontCount >= 7 && backCount >= 7) {
+        const diff9 = backNet - frontNet;
+        if (diff9 >= 5) blowups.push({ player:p, round:ri, frontNet, backNet, diff:diff9 });
+      }
+      // Sandbagger — net total vs par (net under par = beating handicap)
+      if (holeCount >= 14) {
+        const coursePar = COURSE_DATA[ri].par.reduce((a,b)=>a+b,0);
+        const underPar  = coursePar - netTotal;
+        if (underPar >= 5) sandbagger.push({ player:p, round:ri, underPar });
+      }
+    });
+  });
+
+  bogeyTrains.sort((a,b) => b.length - a.length);
+  blowups.sort((a,b) => b.diff - a.diff);
+  sandbagger.sort((a,b) => b.underPar - a.underPar);
+
+  const roundName = ri => ROUNDS[ri].short;
+  const holeName  = h  => `Hole ${h+1}`;
+
+  let html = '';
+
+  // 1. Wall of Shame — Triple Bogeys
+  const shameTop = [...PLAYERS].sort((a,b) => tripleCount[b]-tripleCount[a]).filter(p => tripleCount[p] > 0);
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">🏆</div>
+      <div><div class="fun-award-title">Wall of Shame</div><div class="fun-award-sub">Triple bogey or worse</div></div>
+    </div>`;
+  if (!shameTop.length) html += `<div style="font-size:12px;color:#aaa;">Nobody has carded a triple yet. Stay clean out there.</div>`;
+  else shameTop.forEach((p,i) => {
+    html += `<div class="fun-award-row"><span>${i===0?'😭':i===1?'😬':'😅'} ${p}</span><span class="fun-award-val bad">${tripleCount[p]} triple${tripleCount[p]!==1?'s':''}</span></div>`;
+  });
+  html += `</div>`;
+
+  // 2. Snowman Club — exact 8s
+  const snowTop = [...PLAYERS].sort((a,b) => snowmanCount[b]-snowmanCount[a]).filter(p => snowmanCount[p] > 0);
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">⛄</div>
+      <div><div class="fun-award-title">Snowman Club</div><div class="fun-award-sub">Score of 8 on a single hole</div></div>
+    </div>`;
+  if (!snowTop.length) html += `<div style="font-size:12px;color:#aaa;">No snowmen yet. The round is young.</div>`;
+  else snowTop.forEach((p,i) => {
+    html += `<div class="fun-award-row"><span>⛄ ${p}</span><span class="fun-award-val bad">${snowmanCount[p]} snowman${snowmanCount[p]!==1?'s':''}</span></div>`;
+  });
+  html += `</div>`;
+
+  // 3. Eagle Club
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">🦅</div>
+      <div><div class="fun-award-title">Eagle Club</div><div class="fun-award-sub">Score of eagle or better</div></div>
+    </div>`;
+  if (!eagleList.length) html += `<div style="font-size:12px;color:#aaa;">No eagles yet. Dream big.</div>`;
+  else eagleList.forEach(e => {
+    const label = e.gross <= e.par - 3 ? 'Double Eagle 🤯' : 'Eagle 🦅';
+    html += `<div class="fun-award-row"><span>${e.player}</span><span class="fun-award-val">${label} · ${roundName(e.round)} ${holeName(e.hole)}</span></div>`;
+  });
+  html += `</div>`;
+
+  // 4. Sniper — most birdies
+  const birdieTop = [...PLAYERS].sort((a,b) => birdieCount[b]-birdieCount[a]).filter(p => birdieCount[p] > 0);
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">🎯</div>
+      <div><div class="fun-award-title">Sniper</div><div class="fun-award-sub">Most birdies across all rounds (net)</div></div>
+    </div>`;
+  if (!birdieTop.length) html += `<div style="font-size:12px;color:#aaa;">No birdies yet. Par is the new birdie.</div>`;
+  else birdieTop.slice(0,4).forEach((p,i) => {
+    html += `<div class="fun-award-row"><span>${['🥇','🥈','🥉',''][i]} ${p}</span><span class="fun-award-val">${birdieCount[p]} birdie${birdieCount[p]!==1?'s':''}</span></div>`;
+  });
+  html += `</div>`;
+
+  // 5. Bogey Train
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">🚂</div>
+      <div><div class="fun-award-title">Bogey Train</div><div class="fun-award-sub">Longest streak of consecutive bogeys</div></div>
+    </div>`;
+  if (!bogeyTrains.length) html += `<div style="font-size:12px;color:#aaa;">No bogey trains. Choo choo avoided.</div>`;
+  else bogeyTrains.slice(0,3).forEach(t => {
+    html += `<div class="fun-award-row"><span>🚂 ${t.player}</span><span class="fun-award-val bad">${t.length} in a row · ${roundName(t.round)} starting H${t.startHole+1}</span></div>`;
+  });
+  html += `</div>`;
+
+  // 6. The Daly Award
+  const dalyTop = [...PLAYERS].sort((a,b) => dalyCount[b]-dalyCount[a]).filter(p => dalyCount[p] > 0);
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">🤠</div>
+      <div><div class="fun-award-title">The Daly Award</div><div class="fun-award-sub">Score of 10 or more on a single hole</div></div>
+    </div>`;
+  if (!dalyTop.length) html += `<div style="font-size:12px;color:#aaa;">Nobody has gone full Daly yet. Bold.</div>`;
+  else dalyTop.forEach(p => {
+    html += `<div class="fun-award-row"><span>🤠 ${p}</span><span class="fun-award-val bad">${dalyCount[p]}x</span></div>`;
+  });
+  html += `</div>`;
+
+  // 7. Back 9 Blowup
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">💀</div>
+      <div><div class="fun-award-title">Back 9 Blowup</div><div class="fun-award-sub">Biggest collapse between nines (net)</div></div>
+    </div>`;
+  if (!blowups.length) html += `<div style="font-size:12px;color:#aaa;">No collapses yet. The back 9 awaits.</div>`;
+  else blowups.slice(0,3).forEach(b => {
+    html += `<div class="fun-award-row"><span>💀 ${b.player} · ${roundName(b.round)}</span><span class="fun-award-val bad">Front:${b.frontNet>0?'+':''}${b.frontNet} → Back:${b.backNet>0?'+':''}${b.backNet}</span></div>`;
+  });
+  html += `</div>`;
+
+  // 8. Sandbagger Watch
+  html += `<div class="fun-award">
+    <div class="fun-award-header"><div class="fun-award-emoji">🕵️</div>
+      <div><div class="fun-award-title">Sandbagger Watch</div><div class="fun-award-sub">Beating handicap by most strokes in a round</div></div>
+    </div>`;
+  if (!sandbagger.length) html += `<div style="font-size:12px;color:#aaa;">Nobody is suspiciously good. Yet.</div>`;
+  else sandbagger.slice(0,3).forEach(s => {
+    html += `<div class="fun-award-row"><span>🕵️ ${s.player} · ${roundName(s.round)}</span><span class="fun-award-val">${s.underPar} under par (net)</span></div>`;
+  });
+  html += `</div>`;
+
+  panel.innerHTML = html;
+}
+
+// Eagle flash animation — called when a score is entered
+function checkEagleAlert(player, ri, hi, gross) {
+  const par  = COURSE_DATA[ri].par[hi];
+  const key  = `${player}-${ri}-${hi}`;
+  if (gross <= par - 2 && !eagleFlashShown.has(key)) {
+    eagleFlashShown.add(key);
+    const isAlbatross = gross <= par - 3;
+    const div = document.createElement('div');
+    div.className = 'fun-eagle-flash';
+    div.innerHTML = `<div class="fun-eagle-inner">${isAlbatross ? '🦁' : '🦅'}</div>
+      <div class="fun-eagle-txt">${isAlbatross ? 'ALBATROSS!!!' : 'EAGLE!!!'}</div>
+      <div class="fun-eagle-sub">${player} · ${ROUNDS[ri].short} Hole ${hi+1}</div>`;
+    div.onclick = () => div.remove();
+    document.body.appendChild(div);
+    setTimeout(() => div.remove(), 3200);
+  }
 }
 
 // ============================================================
