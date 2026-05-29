@@ -1224,7 +1224,7 @@
         </table>
       </div>
       <div style="font-family:'DM Mono',monospace;font-size:10px;color:#aaa;margin-top:8px;padding:0 2px;">
-        * Counts R1–R5 only. Bandon Preserve excluded (bonus par-3 round, not competitive).
+        * Counts all 6 rounds: R1–R5 + Bandon Preserve.
       </div>
     </div>
   </div>
@@ -1794,16 +1794,16 @@ const CADDY_SCHEDULE = {
   Zack:   ['Carry','Carry','Carry','Carry','None','Carry'],
 };
 
-// Counts 5 main rounds only (R1–R5). Bandon Preserve excluded — bonus par-3, not a competitive round.
+// Counts all 6 rounds (R1–R5 + Bandon Preserve).
 const PAIR_MATRIX = {
-  Nick:   { Nick:'-', John:2, Vince:2, Bobby:1, Matt:3, Zack:3, Chris:2, Taylor:2 },
-  John:   { Nick:2, John:'-', Vince:1, Bobby:2, Matt:2, Zack:2, Chris:3, Taylor:3 },
-  Vince:  { Nick:2, John:1, Vince:'-', Bobby:2, Matt:2, Zack:2, Chris:3, Taylor:3 },
-  Bobby:  { Nick:1, John:2, Vince:2, Bobby:'-', Matt:3, Zack:3, Chris:2, Taylor:2 },
-  Matt:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:'-', Zack:1, Chris:2, Taylor:2 },
-  Zack:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:1, Zack:'-', Chris:2, Taylor:2 },
-  Chris:  { Nick:2, John:3, Vince:3, Bobby:2, Matt:2, Zack:2, Chris:'-', Taylor:1 },
-  Taylor: { Nick:2, John:3, Vince:3, Bobby:2, Matt:2, Zack:2, Chris:1, Taylor:'-' },
+  Nick:   { Nick:'-', John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:2, Taylor:2 },
+  John:   { Nick:3, John:'-', Vince:2, Bobby:3, Matt:2, Zack:2, Chris:3, Taylor:3 },
+  Vince:  { Nick:3, John:2, Vince:'-', Bobby:3, Matt:2, Zack:2, Chris:3, Taylor:3 },
+  Bobby:  { Nick:2, John:3, Vince:3, Bobby:'-', Matt:3, Zack:3, Chris:2, Taylor:2 },
+  Matt:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:'-', Zack:2, Chris:3, Taylor:3 },
+  Zack:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:2, Zack:'-', Chris:3, Taylor:3 },
+  Chris:  { Nick:2, John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:'-', Taylor:2 },
+  Taylor: { Nick:2, John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:2, Taylor:'-' },
 };
 
 // ============================================================
