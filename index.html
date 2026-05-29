@@ -1042,22 +1042,22 @@
         <div class="group-box">
           <div class="group-label">Group 5 · 3:10 PM</div>
           <div>
-            <span class="player-chip">Chris – G</span>
+            <span class="player-chip">John – C</span>
             <span class="player-chip">Matt – G</span>
             <span class="player-chip">Nick – C</span>
             <span class="player-chip">Vince – G</span>
           </div>
-          <div class="group-cost">3G / 1C / 0N · $275</div>
+          <div class="group-cost">2G / 2C / 0N · $350</div>
         </div>
         <div class="group-box">
           <div class="group-label">Group 6 · 3:20 PM</div>
           <div>
             <span class="player-chip">Bobby – C</span>
-            <span class="player-chip">John – C</span>
+            <span class="player-chip">Chris – G</span>
             <span class="player-chip">Taylor – C</span>
             <span class="player-chip">Zack – C</span>
           </div>
-          <div class="group-cost">0G / 4C / 0N · $500</div>
+          <div class="group-cost">1G / 3C / 0N · $425</div>
         </div>
       </div>
     </div>
@@ -1699,13 +1699,13 @@ const CADDY_SCHEDULE = {
 };
 
 const PAIR_MATRIX = {
-  Nick:   { Nick:'-', John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:2, Taylor:2 },
-  John:   { Nick:3, John:'-', Vince:2, Bobby:3, Matt:2, Zack:2, Chris:3, Taylor:3 },
-  Vince:  { Nick:3, John:2, Vince:'-', Bobby:3, Matt:2, Zack:2, Chris:3, Taylor:3 },
+  Nick:   { Nick:'-', John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:1, Taylor:2 },
+  John:   { Nick:3, John:'-', Vince:3, Bobby:3, Matt:3, Zack:2, Chris:3, Taylor:3 },
+  Vince:  { Nick:3, John:3, Vince:'-', Bobby:3, Matt:2, Zack:2, Chris:2, Taylor:3 },
   Bobby:  { Nick:2, John:3, Vince:3, Bobby:'-', Matt:3, Zack:3, Chris:2, Taylor:2 },
-  Matt:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:'-', Zack:2, Chris:3, Taylor:3 },
+  Matt:   { Nick:3, John:3, Vince:2, Bobby:3, Matt:'-', Zack:2, Chris:2, Taylor:3 },
   Zack:   { Nick:3, John:2, Vince:2, Bobby:3, Matt:2, Zack:'-', Chris:3, Taylor:3 },
-  Chris:  { Nick:2, John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:'-', Taylor:2 },
+  Chris:  { Nick:1, John:3, Vince:2, Bobby:2, Matt:2, Zack:3, Chris:'-', Taylor:2 },
   Taylor: { Nick:2, John:3, Vince:3, Bobby:2, Matt:3, Zack:3, Chris:2, Taylor:'-' },
 };
 
@@ -2545,7 +2545,7 @@ function renderPlayVote() {
 const GROUPS_PER_ROUND = [
   [['Bobby','Matt','Nick','Zack'],   ['Chris','John','Taylor','Vince']],
   [['Chris','John','Nick','Zack'],   ['Bobby','Matt','Taylor','Vince']],
-  [['Chris','Matt','Nick','Vince'],  ['Bobby','John','Taylor','Zack'] ],
+  [['John','Matt','Nick','Vince'],   ['Bobby','Chris','Taylor','Zack']],
   [['Nick','Taylor','Vince','Zack'], ['Bobby','Chris','John','Matt']  ],
   [['John','Matt','Nick','Taylor'],  ['Bobby','Chris','Vince','Zack'] ],
 ];
