@@ -1301,6 +1301,19 @@
       </div>
     </div>
 
+    <!-- 2-Man Scramble Old Mac -->
+    <div class="game-card">
+      <div class="game-header" style="background:#7a3d2d;">
+        <div class="game-title">🌀 2-Man Scramble — Old Mac</div>
+        <div class="game-pot" style="font-size:11px;">R3 · Fri Jun 5</div>
+      </div>
+      <div class="game-body">
+        <div class="game-desc">Both partners hit from the tee, pick the best ball, both play from that spot — repeat until holed. Teams of 2 within each group. Vote below on whether you want to play this format on Old Mac, and your preferred stakes if it's a go.</div>
+        <div id="scramble-play-vote"></div>
+        <div id="votes-scramble"></div>
+      </div>
+    </div>
+
     <!-- 2v2 Best Ball -->
     <div class="game-card">
       <div class="game-header">
@@ -2380,7 +2393,7 @@ function renderCaddies() {
 // VOTING SYSTEM
 // ============================================================
 const VOTE_AMOUNTS = [1, 2, 5, 10, 20, 25, 50];
-const GAME_IDS = ['stableford','skins','nassau','four-v-four','two-v-two'];
+const GAME_IDS = ['stableford','skins','nassau','four-v-four','two-v-two','scramble'];
 
 function loadVotes()  { try { return JSON.parse(localStorage.getItem('bdVotes')  || '{}'); } catch { return {}; } }
 function saveVotes(v) { localStorage.setItem('bdVotes',  JSON.stringify(v)); }
@@ -2478,7 +2491,53 @@ function renderVoteSection(gameId) {
   wrap.innerHTML = html;
 }
 
-function renderAllVotes() { GAME_IDS.forEach(renderVoteSection); }
+function renderAllVotes() { GAME_IDS.forEach(renderVoteSection); renderPlayVote(); }
+
+// ============================================================
+// SCRAMBLE PLAY VOTE
+// ============================================================
+function castScrambleVote() {
+  var player = document.getElementById('scramble-voter').value;
+  var choice = document.getElementById('scramble-choice').value;
+  if (!player || !choice) return;
+  var pv = JSON.parse(localStorage.getItem('bdScrambleVote') || '{}');
+  pv[player] = choice;
+  localStorage.setItem('bdScrambleVote', JSON.stringify(pv));
+  renderPlayVote();
+}
+
+function renderPlayVote() {
+  var wrap = document.getElementById('scramble-play-vote');
+  if (!wrap) return;
+  var pv = JSON.parse(localStorage.getItem('bdScrambleVote') || '{}');
+  var yes = [], no = [];
+  Object.keys(pv).forEach(function(p){ pv[p]==='yes' ? yes.push(p) : no.push(p); });
+  var voted   = Object.keys(pv);
+  var unvoted = PLAYERS.filter(function(p){ return !voted.includes(p); });
+
+  var opts = '<option value="">Your name</option>'
+    + unvoted.map(function(p){ return '<option>'+p+'</option>'; }).join('')
+    + (voted.length ? '<optgroup label="── voted ──">'+voted.map(function(p){ return '<option value="'+p+'">'+p+' ('+pv[p]+')</option>'; }).join('')+'</optgroup>' : '');
+
+  wrap.innerHTML = '<div style="margin-bottom:14px;">'
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:600;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Vote to Play? ('+voted.length+'/8)</div>'
+    + '<div class="vote-input-row" style="margin-bottom:10px;">'
+    + '<select class="vote-sel" id="scramble-voter">'+opts+'</select>'
+    + '<select class="vote-sel" id="scramble-choice"><option value="">Yes / No</option><option value="yes">Yes ✅</option><option value="no">No ❌</option></select>'
+    + '<button class="vote-submit" onclick="castScrambleVote()">Vote</button>'
+    + '</div>'
+    + '<div style="display:flex;gap:10px;">'
+    + '<div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;text-align:center;">'
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Yes</div>'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:900;color:var(--green);">'+yes.length+'</div>'
+    + '<div style="font-size:10px;color:#aaa;">'+(yes.join(', ')||'—')+'</div>'
+    + '</div>'
+    + '<div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;text-align:center;">'
+    + '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">No</div>'
+    + '<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:900;color:var(--red);">'+no.length+'</div>'
+    + '<div style="font-size:10px;color:#aaa;">'+(no.join(', ')||'—')+'</div>'
+    + '</div></div></div>';
+}
 
 // ============================================================
 // 4V4 TEAM MATCH
