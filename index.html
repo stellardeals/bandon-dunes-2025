@@ -719,6 +719,28 @@
     color: var(--green);
     margin-bottom: 16px;
   }
+  .modal-confirm {
+    flex: 1; background: var(--green); color: var(--white);
+    border: none; border-radius: 10px; padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .modal-cancel {
+    flex: 1; background: var(--sand); color: var(--green);
+    border: none; border-radius: 10px; padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .scan-card-btn {
+    width: 100%; background: var(--green); color: var(--white);
+    border: none; border-radius: 12px; padding: 14px 16px;
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-bottom: 14px; letter-spacing: 0.3px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .scan-confirm-tbl { border-collapse: collapse; width: 100%; font-size: 11px; }
+  .scan-confirm-tbl th { background: var(--green); color: white; padding: 4px 5px; text-align: center; position: sticky; top: 0; }
+  .scan-confirm-tbl td { padding: 3px 2px; border-bottom: 1px solid var(--sand); text-align: center; }
+  .scan-confirm-tbl input { width: 32px; border: 1px solid var(--sand); border-radius: 4px; padding: 2px; text-align: center; font-size: 11px; }
+  .scan-confirm-tbl td:first-child { font-weight: 600; font-size: 11px; text-align: left; padding-left: 4px; }
   .form-group { margin-bottom: 14px; }
   .form-label {
     display: block;
@@ -1203,6 +1225,10 @@
     <div class="section-title">Scorecards</div>
     <div class="section-sub">Enter gross scores per hole</div>
 
+    <!-- Scan button -->
+    <button class="scan-card-btn" onclick="openScanModal()">📷 Take Picture of Scorecard to Upload</button>
+    <input type="file" id="scorecard-file-input" accept="image/*" capture="environment" style="display:none" onchange="handleScorecardImage(event)">
+
     <div class="score-round-select" id="score-round-select"></div>
     <div id="scorecard-body"></div>
   </div>
@@ -1634,6 +1660,53 @@
     <div class="tour-btn-row">
       <button class="tour-skip" onclick="endTour()">Skip tour</button>
       <button class="tour-next" id="tour-next-btn" onclick="tourNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCAN SCORECARD MODAL -->
+<div class="modal-overlay" id="scan-modal">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-title">📷 Scan Scorecard</div>
+
+    <!-- Step 1: API key setup -->
+    <div id="scan-step-apikey">
+      <p style="font-size:13px;color:#666;margin-bottom:12px;">Claude AI reads your scorecard photo and inputs scores automatically. Enter your Anthropic API key once — it's saved on this device only.</p>
+      <div class="form-group">
+        <label class="form-label">Anthropic API Key</label>
+        <input class="form-input" type="password" id="scan-apikey-input" placeholder="sk-ant-...">
+      </div>
+      <div style="font-size:11px;color:#aaa;margin-bottom:14px;">Stored in localStorage on your device. Never sent anywhere except Anthropic's API.</div>
+      <div style="display:flex;gap:8px;">
+        <button class="modal-cancel" onclick="closeScanModal()">Cancel</button>
+        <button class="modal-confirm" onclick="saveApiKeyAndScan()">Save & Open Camera</button>
+      </div>
+    </div>
+
+    <!-- Step 2: Preview + loading -->
+    <div id="scan-step-preview" style="display:none;">
+      <div id="scan-preview-wrap" style="margin-bottom:12px;border-radius:8px;overflow:hidden;background:#000;min-height:160px;display:flex;align-items:center;justify-content:center;">
+        <img id="scan-preview-img" style="max-width:100%;max-height:280px;display:none;">
+        <div id="scan-preview-placeholder" style="color:#666;font-size:13px;">No image yet</div>
+      </div>
+      <div id="scan-status" style="font-family:'DM Mono',monospace;font-size:12px;color:var(--green);margin-bottom:12px;min-height:18px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="modal-cancel" onclick="closeScanModal()">Cancel</button>
+        <button class="modal-cancel" onclick="retakeScorecardPhoto()" id="scan-retake-btn" style="display:none;">Retake</button>
+        <button class="modal-confirm" onclick="triggerCameraInput()" id="scan-camera-btn">Open Camera</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Confirm parsed scores -->
+    <div id="scan-step-confirm" style="display:none;">
+      <div style="font-size:13px;color:#555;margin-bottom:10px;">Review parsed scores before saving. Edit any cell that looks wrong.</div>
+      <div id="scan-confirm-table" style="overflow-x:auto;"></div>
+      <div id="scan-confirm-status" style="font-family:'DM Mono',monospace;font-size:11px;color:#888;margin:10px 0;"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="modal-cancel" onclick="closeScanModal()">Discard</button>
+        <button class="modal-cancel" onclick="retakeScorecardPhoto()">Retake</button>
+        <button class="modal-confirm" onclick="confirmParsedScores()">Save Scores ✓</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2889,6 +2962,210 @@ document.addEventListener('DOMContentLoaded', () => {
   if (l) l.innerHTML = PLAYERS.map(p => `<option>${p}</option>`).join('');
   if (!localStorage.getItem('bdTourDone')) setTimeout(startTour, 700);
 });
+
+// ============================================================
+// SCORECARD SCAN — Camera → Claude Vision → Auto-fill scores
+// ============================================================
+let parsedScanScores = null; // { playerName: [18 scores or null] }
+let scanRoundIndex   = 0;
+
+function openScanModal() {
+  // Use the globally tracked active score round
+  scanRoundIndex = activeScoreRound;
+
+  const apiKey = localStorage.getItem('bdApiKey') || '';
+  document.getElementById('scan-step-apikey').style.display  = apiKey ? 'none' : '';
+  document.getElementById('scan-step-preview').style.display = apiKey ? ''     : 'none';
+  document.getElementById('scan-step-confirm').style.display = 'none';
+  if (apiKey) {
+    document.getElementById('scan-status').textContent = '';
+    document.getElementById('scan-preview-img').style.display = 'none';
+    document.getElementById('scan-preview-placeholder').style.display = '';
+    document.getElementById('scan-retake-btn').style.display = 'none';
+    document.getElementById('scan-camera-btn').style.display = '';
+  } else {
+    const saved = localStorage.getItem('bdApiKey') || '';
+    document.getElementById('scan-apikey-input').value = saved;
+  }
+  document.getElementById('scan-modal').classList.add('open');
+}
+
+function closeScanModal() {
+  document.getElementById('scan-modal').classList.remove('open');
+  parsedScanScores = null;
+}
+
+function saveApiKeyAndScan() {
+  const key = document.getElementById('scan-apikey-input').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    alert('Please enter a valid Anthropic API key (starts with sk-ant-).');
+    return;
+  }
+  localStorage.setItem('bdApiKey', key);
+  document.getElementById('scan-step-apikey').style.display  = 'none';
+  document.getElementById('scan-step-preview').style.display = '';
+  document.getElementById('scan-status').textContent = '';
+  document.getElementById('scan-preview-img').style.display  = 'none';
+  document.getElementById('scan-preview-placeholder').style.display = '';
+  document.getElementById('scan-retake-btn').style.display = 'none';
+  document.getElementById('scan-camera-btn').style.display = '';
+  triggerCameraInput();
+}
+
+function triggerCameraInput() {
+  document.getElementById('scorecard-file-input').click();
+}
+
+function retakeScorecardPhoto() {
+  document.getElementById('scan-step-preview').style.display = '';
+  document.getElementById('scan-step-confirm').style.display = 'none';
+  document.getElementById('scan-preview-img').style.display  = 'none';
+  document.getElementById('scan-preview-placeholder').style.display = '';
+  document.getElementById('scan-retake-btn').style.display = 'none';
+  document.getElementById('scan-camera-btn').style.display = '';
+  document.getElementById('scan-status').textContent = '';
+  parsedScanScores = null;
+  triggerCameraInput();
+}
+
+function handleScorecardImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  // Reset input so same file can be reselected
+  event.target.value = '';
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    const img = document.getElementById('scan-preview-img');
+    img.src = dataUrl;
+    img.style.display = 'block';
+    document.getElementById('scan-preview-placeholder').style.display = 'none';
+    document.getElementById('scan-retake-btn').style.display = '';
+    document.getElementById('scan-camera-btn').style.display = 'none';
+    document.getElementById('scan-status').textContent = '⏳ Sending to Claude…';
+    parseScorecard(dataUrl, file.type || 'image/jpeg');
+  };
+  reader.readAsDataURL(file);
+}
+
+async function parseScorecard(dataUrl, mimeType) {
+  const apiKey = localStorage.getItem('bdApiKey');
+  if (!apiKey) { alert('No API key saved.'); return; }
+
+  // Strip the data URL header to get raw base64
+  const base64 = dataUrl.split(',')[1];
+  const validType = ['image/jpeg','image/png','image/gif','image/webp'].includes(mimeType)
+    ? mimeType : 'image/jpeg';
+
+  const round = ROUNDS[scanRoundIndex];
+  const prompt = `This is a golf scorecard photo from round "${round.name}" (${round.date}).
+The 8 players are: ${PLAYERS.join(', ')}.
+Extract each player's gross (raw, not net) score for each of the 18 holes.
+Match names on the scorecard to the player list — partial matches and abbreviations are fine.
+Return ONLY a JSON object with no other text, in exactly this format:
+{"PlayerName": [h1, h2, h3, h4, h5, h6, h7, h8, h9, h10, h11, h12, h13, h14, h15, h16, h17, h18], ...}
+Use null for any hole score that is missing, illegible, or not recorded.
+Only include players you can identify from the scorecard.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 1024,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: validType, data: base64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || 'API error ' + res.status);
+    }
+
+    const data = await res.json();
+    const raw  = data.content?.[0]?.text || '';
+
+    // Extract JSON from the response (may be wrapped in ```json ... ```)
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in response');
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    // Normalise: match returned names to PLAYERS list (case-insensitive, partial)
+    const normalised = {};
+    Object.entries(parsed).forEach(([name, scoreArr]) => {
+      const match = PLAYERS.find(p =>
+        p.toLowerCase() === name.toLowerCase() ||
+        p.toLowerCase().startsWith(name.toLowerCase()) ||
+        name.toLowerCase().startsWith(p.toLowerCase())
+      );
+      if (match) normalised[match] = scoreArr.map(s => (s === null || s === undefined) ? null : parseInt(s));
+    });
+
+    if (!Object.keys(normalised).length) throw new Error('No player names matched. Check the photo.');
+
+    parsedScanScores = normalised;
+    showScanConfirm();
+
+  } catch (err) {
+    document.getElementById('scan-status').textContent = '❌ ' + err.message;
+  }
+}
+
+function showScanConfirm() {
+  document.getElementById('scan-step-preview').style.display = 'none';
+  document.getElementById('scan-step-confirm').style.display = '';
+
+  const ri = scanRoundIndex;
+  const found = Object.keys(parsedScanScores);
+  const missing = PLAYERS.filter(p => !parsedScanScores[p]);
+  document.getElementById('scan-confirm-status').textContent =
+    `Detected ${found.length} player${found.length!==1?'s':''}: ${found.join(', ')}.`
+    + (missing.length ? ` Not found: ${missing.join(', ')}.` : '');
+
+  // Build editable table: rows = players found, cols = 18 holes
+  let html = '<table class="scan-confirm-tbl"><thead><tr><th>Player</th>';
+  for (let h = 1; h <= 18; h++) html += `<th>${h}</th>`;
+  html += '</tr></thead><tbody>';
+
+  found.forEach(p => {
+    html += `<tr><td>${p}</td>`;
+    for (let h = 0; h < 18; h++) {
+      const val = parsedScanScores[p][h];
+      html += `<td><input type="number" min="1" max="20" id="sc-${p}-${h}" value="${val !== null && val !== undefined ? val : ''}" placeholder="—"></td>`;
+    }
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('scan-confirm-table').innerHTML = html;
+}
+
+function confirmParsedScores() {
+  const ri = scanRoundIndex;
+  const found = Object.keys(parsedScanScores);
+  found.forEach(p => {
+    for (let h = 0; h < 18; h++) {
+      const inp = document.getElementById(`sc-${p}-${h}`);
+      const val = inp ? inp.value.trim() : '';
+      scores[ri][p][h] = val !== '' ? parseInt(val) : '';
+    }
+  });
+  closeScanModal();
+  renderScorecard();
+  showSection('scores', document.querySelector('.nav-btn[onclick*="scores"]'));
+}
 </script>
 </body>
 </html>
