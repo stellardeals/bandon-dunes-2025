@@ -2035,7 +2035,7 @@ function renderSkinsHoles() {
   for (let h = 0; h < 18; h++) {
     const sel = skinsData[ri][h];
     html += `<div style="background:var(--tan-pale);border-radius:8px;padding:8px 6px;">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:4px;">Hole ${h+1} · Par ${PAR[h]}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:4px;">Hole ${h+1} · Par ${COURSE_DATA[ri].par[h]}</div>
       <select style="width:100%;border:1px solid var(--sand);border-radius:4px;padding:4px;font-size:11px;background:var(--white);"
         onchange="skinsData[${ri}][${h}]=this.value;renderSkinsResults()">
         <option value="">-- Tie/TBD</option>
@@ -2483,126 +2483,143 @@ function renderAllVotes() { GAME_IDS.forEach(renderVoteSection); }
 // ============================================================
 // 4V4 TEAM MATCH
 // ============================================================
-const TEAMS_4V4 = [
-  { a:['Bobby','Matt','Nick','Zack'],    b:['Chris','John','Taylor','Vince'] },
-  { a:['Chris','John','Nick','Zack'],    b:['Bobby','Matt','Taylor','Vince'] },
-  { a:['Chris','Matt','Nick','Vince'],   b:['Bobby','John','Taylor','Zack']  },
-  { a:['Nick','Taylor','Vince','Zack'],  b:['Bobby','Chris','John','Matt']   },
-  { a:['John','Matt','Nick','Taylor'],   b:['Bobby','Chris','Vince','Zack']  },
+const GROUPS_PER_ROUND = [
+  [['Bobby','Matt','Nick','Zack'],   ['Chris','John','Taylor','Vince']],
+  [['Chris','John','Nick','Zack'],   ['Bobby','Matt','Taylor','Vince']],
+  [['Chris','Matt','Nick','Vince'],  ['Bobby','John','Taylor','Zack'] ],
+  [['Nick','Taylor','Vince','Zack'], ['Bobby','Chris','John','Matt']  ],
+  [['John','Matt','Nick','Taylor'],  ['Bobby','Chris','Vince','Zack'] ],
 ];
+const TEAMS_4V4 = GROUPS_PER_ROUND.map(([a,b]) => ({ a, b }));
 
-let matchData4v4 = {};
-ROUNDS.forEach((r,ri) => { matchData4v4[ri] = Array(18).fill(''); });
+function teamHoleScore(team, ri, hi) {
+  const nets = team
+    .map(p => { const g = scores[ri][p][hi]; return (g===''||g===null||g===undefined) ? null : parseInt(g)-strokesOnHole(handicaps[p],ri,hi); })
+    .filter(s => s!==null).sort((a,b)=>a-b);
+  return nets.length >= 3 ? nets.slice(0,3).reduce((a,b)=>a+b,0) : null;
+}
 
 function render4v4() {
   const ri = parseInt(document.getElementById('match4v4-round')?.value || '0');
   const t  = TEAMS_4V4[ri];
-  const holes = matchData4v4[ri];
-  let aW = 0, bW = 0;
-  holes.forEach(h => { if (h==='a') aW++; else if (h==='b') bW++; });
-  const status = aW > bW ? `Team A leads ${aW-bW} up` : bW > aW ? `Team B leads ${bW-aW} up` : 'All Square';
   const wrap = document.getElementById('match4v4-body');
   if (!wrap) return;
 
-  let html = `<div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;text-align:center;margin-bottom:10px;">${status}</div>
-  <div class="team-row">
-    <div class="team-box ${aW>bW?'leading':''}">
-      <div class="team-name-lbl">Team A</div>
-      <div class="team-score-lbl">${aW}</div>
-      <div class="team-players-lbl">${t.a.join(' · ')}</div>
-    </div>
-    <div class="match-vs-lbl">vs</div>
-    <div class="team-box ${bW>aW?'leading':''}">
-      <div class="team-name-lbl">Team B</div>
-      <div class="team-score-lbl">${bW}</div>
-      <div class="team-players-lbl">${t.b.join(' · ')}</div>
-    </div>
-  </div>
-  <div style="font-size:11px;color:#aaa;margin-bottom:6px;text-align:center;font-family:'DM Mono',monospace;">Tap hole → A win → B win → Halved → clear</div>`;
+  let aW=0, bW=0, halved=0;
+  const winner = Array(18).fill('');
+  for (let h=0; h<18; h++) {
+    const aS = teamHoleScore(t.a, ri, h), bS = teamHoleScore(t.b, ri, h);
+    if (aS===null||bS===null) continue;
+    if (aS<bS) { winner[h]='a'; aW++; } else if (bS<aS) { winner[h]='b'; bW++; } else { winner[h]='h'; halved++; }
+  }
+  const status = aW>bW ? 'Team A leads '+(aW-bW)+' up' : bW>aW ? 'Team B leads '+(bW-aW)+' up' : 'All Square';
 
-  [0, 9].forEach(start => {
-    html += `<div class="hole-grid-match">`;
-    for (let h = start+1; h <= start+9; h++) html += `<div class="hole-cell-m mhdr">${h}</div>`;
-    for (let h = start; h < start+9; h++) {
-      const v = holes[h];
-      const cls = v==='a'?'ma':v==='b'?'mb':v==='h'?'mh':'mneutral';
-      const lbl = v==='a'?'A':v==='b'?'B':v==='h'?'½':'·';
-      html += `<div class="hole-cell-m ${cls}" onclick="cycle4v4(${ri},${h})">${lbl}</div>`;
+  let html = '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:#888;text-align:center;margin-bottom:10px;">'+status+' &middot; '+halved+' halved</div>'
+    +'<div class="team-row">'
+    +'<div class="team-box '+(aW>bW?'leading':'')+'"><div class="team-name-lbl">Team A</div><div class="team-score-lbl">'+aW+'</div><div class="team-players-lbl">'+t.a.join(' &middot; ')+'</div></div>'
+    +'<div class="match-vs-lbl">vs</div>'
+    +'<div class="team-box '+(bW>aW?'leading':'')+'"><div class="team-name-lbl">Team B</div><div class="team-score-lbl">'+bW+'</div><div class="team-players-lbl">'+t.b.join(' &middot; ')+'</div></div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#aaa;margin-bottom:4px;text-align:center;font-family:\'DM Mono\',monospace;">Lowest 3 net scores summed &middot; auto from scorecards</div>';
+
+  [0,9].forEach(function(start) {
+    html += '<div class="hole-grid-match">';
+    for (var h=start+1; h<=start+9; h++) html += '<div class="hole-cell-m mhdr">'+h+'</div>';
+    for (var h=start; h<start+9; h++) {
+      var aS=teamHoleScore(t.a,ri,h), bS=teamHoleScore(t.b,ri,h), v=winner[h];
+      var cls=v==='a'?'ma':v==='b'?'mb':v==='h'?'mh':'mneutral';
+      var lbl=aS!==null?(v==='h'?'&frac12;':v==='a'?aS:v==='b'?bS:'&middot;'):'&middot;';
+      html += '<div class="hole-cell-m '+cls+'" title="'+(aS!==null?'A:'+aS+'  B:'+bS:'Enter scores first')+'">'+lbl+'</div>';
     }
-    html += `</div>`;
+    html += '</div>';
   });
   wrap.innerHTML = html;
 }
 
-function cycle4v4(ri, hi) {
-  const cur = matchData4v4[ri][hi];
-  matchData4v4[ri][hi] = cur===''?'a':cur==='a'?'b':cur==='b'?'h':'';
-  render4v4();
+// ============================================================
+// 2V2 BEST BALL  (selectable pairs, 2nd player is tiebreaker)
+// ============================================================
+var pairs2v2 = {};
+ROUNDS.forEach(function(_,ri) {
+  pairs2v2[ri] = {};
+  [0,1].forEach(function(gi) {
+    var grp = GROUPS_PER_ROUND[ri][gi];
+    pairs2v2[ri][gi] = { a:[grp[0],grp[1]], b:[grp[2],grp[3]] };
+  });
+});
+
+function pairNet(player, ri, hi) {
+  var g = scores[ri][player][hi];
+  return (g===''||g===null||g===undefined) ? null : parseInt(g)-strokesOnHole(handicaps[player],ri,hi);
 }
 
-// ============================================================
-// 2V2 BEST BALL
-// ============================================================
-const PAIRS_2V2 = [
-  [['Bobby','Zack'],   ['Matt','Nick']  ],  // R1 G1
-  [['Chris','Taylor'], ['John','Vince'] ],  // R1 G2
-  [['John','Zack'],    ['Chris','Nick'] ],  // R2 G1
-  [['Bobby','Taylor'], ['Matt','Vince'] ],  // R2 G2
-  [['Chris','Nick'],   ['Matt','Vince'] ],  // R3 G1
-  [['Bobby','Taylor'], ['John','Zack']  ],  // R3 G2
-  [['Taylor','Nick'],  ['Vince','Zack'] ],  // R4 G1
-  [['Bobby','Chris'],  ['John','Matt']  ],  // R4 G2
-  [['John','Taylor'],  ['Matt','Nick']  ],  // R5 G1
-  [['Bobby','Zack'],   ['Chris','Vince']],  // R5 G2
-];
-
-let matchData2v2 = {};
-ROUNDS.forEach((r,ri) => { matchData2v2[ri] = { 0: Array(18).fill(''), 1: Array(18).fill('') }; });
+function pairHoleResult(p1, p2, ri, hi) {
+  var n1=pairNet(p1,ri,hi), n2=pairNet(p2,ri,hi);
+  if (n1===null && n2===null) return null;
+  return { primary: Math.min(n1!==null?n1:Infinity, n2!==null?n2:Infinity), tiebreaker: n2!==null?n2:Infinity };
+}
 
 function render2v2() {
-  const ri = parseInt(document.getElementById('match2v2-round')?.value || '0');
-  const gi = parseInt(document.getElementById('match2v2-group')?.value || '0');
-  const pairs = PAIRS_2V2[ri * 2 + gi];
-  const holes = matchData2v2[ri][gi];
-  let aW = 0, bW = 0;
-  holes.forEach(h => { if (h==='a') aW++; else if (h==='b') bW++; });
-  const status = aW > bW ? `Pair A leads ${aW-bW} up` : bW > aW ? `Pair B leads ${bW-aW} up` : 'All Square';
-  const wrap = document.getElementById('match2v2-body');
+  var ri = parseInt(document.getElementById('match2v2-round').value||'0');
+  var gi = parseInt(document.getElementById('match2v2-group').value||'0');
+  var grp = GROUPS_PER_ROUND[ri][gi];
+  var cur = pairs2v2[ri][gi];
+  var wrap = document.getElementById('match2v2-body');
   if (!wrap) return;
 
-  let html = `<div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;text-align:center;margin-bottom:10px;">${status}</div>
-  <div class="team-row">
-    <div class="team-box ${aW>bW?'leading':''}">
-      <div class="team-name-lbl">Pair A</div>
-      <div class="team-score-lbl">${aW}</div>
-      <div class="team-players-lbl">${pairs[0].join(' & ')}</div>
-    </div>
-    <div class="match-vs-lbl">vs</div>
-    <div class="team-box ${bW>aW?'leading':''}">
-      <div class="team-name-lbl">Pair B</div>
-      <div class="team-score-lbl">${bW}</div>
-      <div class="team-players-lbl">${pairs[1].join(' & ')}</div>
-    </div>
-  </div>
-  <div style="font-size:11px;color:#aaa;margin-bottom:6px;text-align:center;font-family:'DM Mono',monospace;">Tap hole → A win → B win → Halved → clear</div>`;
+  var aW=0, bW=0, halved=0;
+  for (var h=0; h<18; h++) {
+    var aR=pairHoleResult(cur.a[0],cur.a[1],ri,h), bR=pairHoleResult(cur.b[0],cur.b[1],ri,h);
+    if (!aR||!bR) continue;
+    if (aR.primary<bR.primary||(aR.primary===bR.primary&&aR.tiebreaker<bR.tiebreaker)) aW++;
+    else if (bR.primary<aR.primary||(bR.primary===aR.primary&&bR.tiebreaker<aR.tiebreaker)) bW++;
+    else halved++;
+  }
+  var status = aW>bW?'Pair A leads '+(aW-bW)+' up':bW>aW?'Pair B leads '+(bW-aW)+' up':'All Square';
 
-  [0, 9].forEach(start => {
-    html += `<div class="hole-grid-match">`;
-    for (let h = start+1; h <= start+9; h++) html += `<div class="hole-cell-m mhdr">${h}</div>`;
-    for (let h = start; h < start+9; h++) {
-      const v = holes[h];
-      const cls = v==='a'?'ma':v==='b'?'mb':v==='h'?'mh':'mneutral';
-      const lbl = v==='a'?'A':v==='b'?'B':v==='h'?'½':'·';
-      html += `<div class="hole-cell-m ${cls}" onclick="cycle2v2(${ri},${gi},${h})">${lbl}</div>`;
+  var opts = function(sel) { return grp.map(function(p){ return '<option'+(p===sel?' selected':'')+'>'+p+'</option>'; }).join(''); };
+
+  var html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">'
+    +'<div style="background:var(--tan-pale);border-radius:8px;padding:10px;">'
+    +'<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Pair A</div>'
+    +'<select class="form-input" style="margin-bottom:6px;font-size:12px;" onchange="setPair('+ri+','+gi+',\'a\',0,this.value)">'+opts(cur.a[0])+'</select>'
+    +'<select class="form-input" style="font-size:12px;" onchange="setPair('+ri+','+gi+',\'a\',1,this.value)">'+opts(cur.a[1])+'</select>'
+    +'<div style="font-size:9px;color:#aaa;margin-top:4px;">Tiebreaker: '+cur.a[1]+'</div>'
+    +'</div>'
+    +'<div style="background:var(--tan-pale);border-radius:8px;padding:10px;">'
+    +'<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:#888;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Pair B</div>'
+    +'<select class="form-input" style="margin-bottom:6px;font-size:12px;" onchange="setPair('+ri+','+gi+',\'b\',0,this.value)">'+opts(cur.b[0])+'</select>'
+    +'<select class="form-input" style="font-size:12px;" onchange="setPair('+ri+','+gi+',\'b\',1,this.value)">'+opts(cur.b[1])+'</select>'
+    +'<div style="font-size:9px;color:#aaa;margin-top:4px;">Tiebreaker: '+cur.b[1]+'</div>'
+    +'</div></div>'
+    +'<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:#888;text-align:center;margin-bottom:10px;">'+status+' &middot; '+halved+' halved</div>'
+    +'<div class="team-row">'
+    +'<div class="team-box '+(aW>bW?'leading':'')+'"><div class="team-name-lbl">Pair A</div><div class="team-score-lbl">'+aW+'</div><div class="team-players-lbl">'+cur.a[0]+' &amp; '+cur.a[1]+'</div></div>'
+    +'<div class="match-vs-lbl">vs</div>'
+    +'<div class="team-box '+(bW>aW?'leading':'')+'"><div class="team-name-lbl">Pair B</div><div class="team-score-lbl">'+bW+'</div><div class="team-players-lbl">'+cur.b[0]+' &amp; '+cur.b[1]+'</div></div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#aaa;margin-bottom:4px;text-align:center;font-family:\'DM Mono\',monospace;">Best ball net &middot; 2nd player tiebreaker &middot; auto from scorecards</div>';
+
+  [0,9].forEach(function(start) {
+    html += '<div class="hole-grid-match">';
+    for (var h=start+1; h<=start+9; h++) html += '<div class="hole-cell-m mhdr">'+h+'</div>';
+    for (var h=start; h<start+9; h++) {
+      var aR=pairHoleResult(cur.a[0],cur.a[1],ri,h), bR=pairHoleResult(cur.b[0],cur.b[1],ri,h);
+      var cls='mneutral', lbl='&middot;';
+      if (aR&&bR) {
+        if (aR.primary<bR.primary||(aR.primary===bR.primary&&aR.tiebreaker<bR.tiebreaker)) { cls='ma'; lbl=aR.primary; }
+        else if (bR.primary<aR.primary||(bR.primary===aR.primary&&bR.tiebreaker<aR.tiebreaker)) { cls='mb'; lbl=bR.primary; }
+        else { cls='mh'; lbl='&frac12;'; }
+      }
+      html += '<div class="hole-cell-m '+cls+'">'+lbl+'</div>';
     }
-    html += `</div>`;
+    html += '</div>';
   });
   wrap.innerHTML = html;
 }
 
-function cycle2v2(ri, gi, hi) {
-  const cur = matchData2v2[ri][gi][hi];
-  matchData2v2[ri][gi][hi] = cur===''?'a':cur==='a'?'b':cur==='b'?'h':'';
+function setPair(ri, gi, team, idx, player) {
+  pairs2v2[ri][gi][team][idx] = player;
   render2v2();
 }
 
