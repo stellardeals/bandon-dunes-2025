@@ -1281,13 +1281,6 @@
               <option value="4">Round 5 — Pac Dunes</option>
             </select>
           </div>
-          <div>
-            <label class="form-label">Group</label>
-            <select class="form-input" id="skins-group-select" onchange="renderSkinsHoles()">
-              <option value="0">Group 1 (early)</option>
-              <option value="1">Group 2 (late)</option>
-            </select>
-          </div>
         </div>
         <div id="skins-holes"></div>
         <div id="skins-results" style="margin-top:12px;"></div>
@@ -2137,23 +2130,19 @@ function computeSkinWinnersForGroup(players, ri) {
 
 function renderSkinsHoles() {
   const ri  = parseInt(document.getElementById('skins-round-select')?.value) || 0;
-  const gi  = parseInt(document.getElementById('skins-group-select')?.value || '0');
-  const grp = GROUPS_PER_ROUND[ri][gi];
   const wrap = document.getElementById('skins-holes');
   if (!wrap) return;
 
-  const winners = computeSkinWinnersForGroup(grp, ri);
+  const winners = computeSkinWinnersForGroup(PLAYERS, ri);
   let carry = 0;
-  let html = '<div style="font-size:11px;color:#888;margin-bottom:8px;font-family:\'DM Mono\',monospace;text-align:center;">'
-    + grp.join(' · ') + '</div>'
-    + '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
+  let html = '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">';
 
   for (let h = 0; h < 18; h++) {
     carry++;
     const w = winners[h];
     const isWon = !!w;
     if (isWon) carry = 0;
-    const nets = grp.map(p => {
+    const nets = PLAYERS.map(p => {
       const g = scores[ri] && scores[ri][p] ? scores[ri][p][h] : '';
       if (g === '' || g === null || g === undefined) return null;
       return parseInt(g) - strokesOnHole(handicaps[p], ri, h);
@@ -2162,7 +2151,7 @@ function renderSkinsHoles() {
     html += `<div style="background:${isWon ? '#e8f5e9' : 'var(--tan-pale)'};border-radius:8px;padding:8px 6px;border:1px solid ${isWon ? 'var(--green-mid)' : 'transparent'};">
       <div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;margin-bottom:3px;">Hole ${h+1} · Par ${COURSE_DATA[ri].par[h]}</div>
       <div style="font-size:12px;font-weight:700;color:${isWon ? 'var(--green)' : '#aaa'};">${isWon ? w : (hasScores ? 'Tie — carry' : '—')}</div>
-      <div style="font-size:9px;color:#bbb;margin-top:2px;">${grp.map((p,i) => nets[i]!==null ? p[0]+':'+nets[i] : '').filter(Boolean).join(' ')}</div>
+      <div style="font-size:9px;color:#bbb;margin-top:2px;">${PLAYERS.map((p,i) => nets[i]!==null ? p[0]+':'+nets[i] : '').filter(Boolean).join(' ')}</div>
     </div>`;
   }
   html += '</div>';
@@ -2171,16 +2160,10 @@ function renderSkinsHoles() {
   updateSkinsPot();
 }
 
-function updateSkinsGroupSelect() {
-  renderSkinsHoles();
-}
-
 function renderSkinsResults() {
   const ri = parseInt(document.getElementById('skins-round-select')?.value) || 0;
-  const gi = parseInt(document.getElementById('skins-group-select')?.value || '0');
   const perHole = parseInt(document.getElementById('skins-per-hole')?.value) || 5;
-  const grp = GROUPS_PER_ROUND[ri][gi];
-  const winners = computeSkinWinnersForGroup(grp, ri);
+  const winners = computeSkinWinnersForGroup(PLAYERS, ri);
   const totals = {};
   PLAYERS.forEach(p => totals[p] = 0);
   let carry = 0;
@@ -2190,9 +2173,9 @@ function renderSkinsResults() {
   });
   const res = document.getElementById('skins-results');
   if (!res) return;
-  const top = grp.filter(p => totals[p] > 0).sort((a,b) => totals[b]-totals[a]);
+  const top = PLAYERS.filter(p => totals[p] > 0).sort((a,b) => totals[b]-totals[a]);
   if (!top.length) { res.innerHTML = '<div class="empty">No skins yet — enter scores first</div>'; return; }
-  res.innerHTML = '<div style="font-weight:600;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#888;">Group Results</div>' +
+  res.innerHTML = '<div style="font-weight:600;margin-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#888;">Day Results</div>' +
     top.map(p => `<div class="nassau-row"><span class="nassau-label">${p}</span><span class="nassau-val win">+$${totals[p]}</span></div>`).join('');
 }
 
