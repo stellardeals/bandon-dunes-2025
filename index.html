@@ -764,6 +764,86 @@
     font-family: 'DM Sans', sans-serif;
   }
 
+  /* FOOD */
+  .dinner-night {
+    background: var(--white);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid var(--sand);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .dinner-night-header {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dinner-night-header.thu { background: #2d4a7a; }
+  .dinner-night-header.fri { background: #5a3d7a; }
+  .dinner-night-header.sat { background: #7a3d2d; }
+  .dinner-night-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--white);
+  }
+  .dinner-night-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .dinner-night-body { padding: 14px 16px; }
+  .dinner-vibe {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    padding: 3px 9px;
+    border-radius: 20px;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .dinner-vibe.casual { background: var(--tan-pale); color: var(--green); }
+  .dinner-vibe.upscale { background: #fce4ec; color: #c0392b; }
+  .dinner-vibe.steakhouse { background: #fbe9e7; color: #bf360c; }
+  .dinner-desc { font-size: 13px; color: #555; line-height: 1.6; }
+  .dinner-highlights {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .food-spot {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--sand);
+    margin-bottom: 8px;
+  }
+  .food-spot-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .food-spot-name {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--green);
+  }
+  .food-spot-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #888;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .food-spot-desc { font-size: 12px; color: #666; line-height: 1.5; }
+
   /* PAIR FREQUENCY */
   .pair-table {
     width: 100%;
@@ -808,6 +888,7 @@
     <button class="nav-btn" onclick="showSection('money',this)">💰 Money</button>
     <button class="nav-btn" onclick="showSection('costs',this)">Costs</button>
     <button class="nav-btn" onclick="showSection('caddies',this)">Caddies</button>
+    <button class="nav-btn" onclick="showSection('food',this)">🍽️ Food</button>
   </nav>
 </div>
 
@@ -1218,6 +1299,138 @@
         <div class="card-sub">Trip + net gambling</div>
       </div>
       <div id="costs-allin"></div>
+    </div>
+  </div>
+
+  <!-- FOOD -->
+  <div id="section-food" class="section">
+    <div class="section-title">Food & Dining</div>
+    <div class="section-sub">3 nights · on-resort & beyond</div>
+
+    <!-- Dinner Schedule -->
+    <div class="dinner-night">
+      <div class="dinner-night-header thu">
+        <div>
+          <div class="dinner-night-title">🍺 The Gallery & Puffin Bar</div>
+          <div class="dinner-night-date">Thursday, June 4 · Night 1</div>
+        </div>
+        <div style="font-size:22px;">🐦</div>
+      </div>
+      <div class="dinner-night-body">
+        <span class="dinner-vibe casual">Post-Round · Casual</span>
+        <div class="dinner-desc">Kick off the trip at the Puffin Bar in the Main Lodge after Round 1. Italian-focused menu with panoramic views of Pacific Dunes and Bandon Dunes. Known for its relaxed vibe — perfect for the first-night recap. Dinner reservations recommended.</div>
+        <div class="dinner-highlights">
+          <span class="chip">Italian menu</span>
+          <span class="chip">Panoramic views</span>
+          <span class="chip">Main Lodge</span>
+          <span class="chip">Indoor + outdoor</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dinner-night">
+      <div class="dinner-night-header fri">
+        <div>
+          <div class="dinner-night-title">🌊 Pacific Grill</div>
+          <div class="dinner-night-date">Friday, June 5 · Night 2</div>
+        </div>
+        <div style="font-size:22px;">🐟</div>
+      </div>
+      <div class="dinner-night-body">
+        <span class="dinner-vibe upscale">Upscale · Seafood</span>
+        <div class="dinner-desc">Perched on the second level of the Pacific Dunes clubhouse, overlooking the 18th green and Punchbowl. Intimate room (~50 seats) with the best wine list on the property. Constantly rotating menu spotlighting fresh Oregon coast catches with a Mediterranean flair. Book ahead.</div>
+        <div class="dinner-highlights">
+          <span class="chip">Seafood-forward</span>
+          <span class="chip">Best wine list</span>
+          <span class="chip">~50 seats · intimate</span>
+          <span class="chip">18th green views</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dinner-night">
+      <div class="dinner-night-header sat">
+        <div>
+          <div class="dinner-night-title">🥩 Ghost Tree Grill</div>
+          <div class="dinner-night-date">Saturday, June 6 · Night 3</div>
+        </div>
+        <div style="font-size:22px;">🔥</div>
+      </div>
+      <div class="dinner-night-body">
+        <span class="dinner-vibe steakhouse">Steakhouse · Raw Bar</span>
+        <div class="dinner-desc">The marquee dinner of the trip. Pacific Northwest steakhouse and raw bar with sweeping views of Old Macdonald. Signature dry-aged 24oz ribeye from Double R Ranch, plus Kobe and Wagyu from Japan and Australia. Grand bar flows inside to an outdoor fire pit courtyard. Reviewed as "the best dinner restaurant on property, hands-down."</div>
+        <div class="dinner-highlights">
+          <span class="chip">24oz dry-aged ribeye</span>
+          <span class="chip">Wagyu & Kobe</span>
+          <span class="chip">Raw bar</span>
+          <span class="chip">Fire pit courtyard</span>
+          <span class="chip">Old Mac views</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- On-Resort Highlights -->
+    <div class="card" style="margin-top:4px;">
+      <div class="card-header">
+        <div class="card-title">On-Resort Eats</div>
+        <div class="card-sub">Daytime & casual</div>
+      </div>
+
+      <div class="food-spot">
+        <div class="food-spot-header">
+          <div class="food-spot-name">McKee's Pub</div>
+          <div class="food-spot-type">Irish Pub</div>
+        </div>
+        <div class="food-spot-desc">The go-to after a round. Pork belly poutine, fish & chips, Applewood smoked steelhead. Indoor and outdoor seating with Irish-pub energy.</div>
+      </div>
+
+      <div class="food-spot">
+        <div class="food-spot-header">
+          <div class="food-spot-name">Charlotte's</div>
+          <div class="food-spot-type">BBQ · Practice Center</div>
+        </div>
+        <div class="food-spot-desc">Casual BBQ spot at the Practice Center. Great for a quick bite before or between rounds.</div>
+      </div>
+
+      <div class="food-spot">
+        <div class="food-spot-header">
+          <div class="food-spot-name">The Bunker Bar</div>
+          <div class="food-spot-type">Cigars & Spirits</div>
+        </div>
+        <div class="food-spot-desc">Fine cigars and premium spirits. The spot to wind down after 18.</div>
+      </div>
+
+      <div class="food-spot">
+        <div class="food-spot-header">
+          <div class="food-spot-name">Library Lounge</div>
+          <div class="food-spot-type">Cocktails · Small Plates</div>
+        </div>
+        <div class="food-spot-desc">Locally sourced South Coast cuisine with rotating craft cocktails and spirits.</div>
+      </div>
+    </div>
+
+    <!-- Off-Resort -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Old Town Bandon</div>
+        <div class="card-sub">Worth the drive</div>
+      </div>
+
+      <div class="food-spot">
+        <div class="food-spot-header">
+          <div class="food-spot-name">Bandon Fish Market</div>
+          <div class="food-spot-type">Seafood · Waterfront</div>
+        </div>
+        <div class="food-spot-desc">The local legend for fish & chips on the Old Town waterfront. Cash only, no frills, absolutely worth it.</div>
+      </div>
+
+      <div class="food-spot">
+        <div class="food-spot-header">
+          <div class="food-spot-name">Lord Bennett's</div>
+          <div class="food-spot-type">Coastal Fine Dining</div>
+        </div>
+        <div class="food-spot-desc">Destination coastal restaurant with spectacular Pacific Ocean views. Seafood, steak, and slow-cooked ribs.</div>
+      </div>
     </div>
   </div>
 
