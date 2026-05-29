@@ -1295,23 +1295,6 @@
       </div>
     </div>
 
-    <!-- Nassau -->
-    <div class="game-card">
-      <div class="game-header">
-        <div class="game-title">🤝 Nassau</div>
-        <div class="game-pot">3 bets/round</div>
-      </div>
-      <div class="game-body">
-        <div class="game-desc">Three separate bets: Front 9, Back 9, and Overall 18. Each foursome runs their own Nassau each round. Press option available.</div>
-        <div style="margin-bottom:8px;">
-          <label class="form-label">Nassau Bet Amount ($)</label>
-          <input class="form-input" type="number" id="nassau-amt" value="20" min="1">
-        </div>
-        <div id="nassau-rounds"></div>
-        <div id="votes-nassau"></div>
-      </div>
-    </div>
-
     <!-- 4v4 Team Match -->
     <div class="game-card">
       <div class="game-header">
@@ -1334,22 +1317,6 @@
         </div>
         <div id="match4v4-body"></div>
         <div id="votes-four-v-four"></div>
-      </div>
-    </div>
-
-    <!-- 2-Man Scramble Old Mac -->
-    <div class="game-card" style="border:2px dashed #a0522d;opacity:0.92;">
-      <div class="game-header" style="background:#7a3d2d;">
-        <div class="game-title">🌀 2-Man Scramble — Old Mac</div>
-        <div class="game-pot" style="font-size:11px;">R3 · Fri Jun 5 · Optional</div>
-      </div>
-      <div class="game-body">
-        <div style="background:#fff3e0;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-family:'DM Mono',monospace;font-size:11px;color:#a0522d;font-weight:600;letter-spacing:0.5px;">
-          ⚠️ IF YOU WANT TO DO THIS — vote below. Needs majority to play.
-        </div>
-        <div class="game-desc">Both partners hit, pick the best ball, both play from that spot — repeat until holed. Pairs of 2 within each group. Vote yes/no first; stakes only matter if it's a go.</div>
-        <div id="scramble-play-vote"></div>
-        <div id="votes-scramble"></div>
       </div>
     </div>
 
@@ -1756,8 +1723,9 @@
         <label class="form-label">Game</label>
         <select class="form-input" id="txn-game">
           <option>Skins</option>
-          <option>Nassau</option>
           <option>Stableford</option>
+          <option>4v4 Match</option>
+          <option>2v2 Best Ball</option>
           <option>Other</option>
         </select>
       </div>
@@ -1926,7 +1894,7 @@ function showSection(id, btn) {
   document.getElementById('section-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
   if (id === 'scores') renderScorecard();
-  if (id === 'betting') { renderStableford(); renderSkinsHoles(); renderNassau(); render4v4(); render2v2(); renderAllVotes(); }
+  if (id === 'betting') { renderStableford(); renderSkinsHoles(); render4v4(); render2v2(); renderAllVotes(); }
   if (id === 'money') renderMoney();
   if (id === 'costs') renderCosts();
   if (id === 'caddies') renderCaddies();
@@ -2229,58 +2197,6 @@ function renderSkinsResults() {
 }
 
 // ============================================================
-// NASSAU
-// ============================================================
-function nassauGroupWinner(players, ri, holes) {
-  const totals = players.map(p => {
-    const nets = holes.map(h => {
-      const g = scores[ri] && scores[ri][p] ? scores[ri][p][h] : '';
-      if (g === '' || g === null || g === undefined) return null;
-      return parseInt(g) - strokesOnHole(handicaps[p], ri, h);
-    });
-    if (nets.some(n => n === null)) return null;
-    return { p, total: nets.reduce((a,b) => a+b, 0) };
-  }).filter(Boolean);
-  if (!totals.length) return { name: '—', detail: 'Enter scores' };
-  const best = Math.min(...totals.map(x => x.total));
-  const w = totals.filter(x => x.total === best);
-  const detail = totals.map(x => x.p[0]+':'+x.total).join(' ');
-  return { name: w.length === 1 ? w[0].p : 'Tied', detail };
-}
-
-function renderNassau() {
-  const wrap = document.getElementById('nassau-rounds');
-  if (!wrap) return;
-  const amt = parseInt(document.getElementById('nassau-amt')?.value) || 20;
-  const segments = [
-    { label: 'Front 9',  holes: Array.from({length:9},(_,i)=>i)   },
-    { label: 'Back 9',   holes: Array.from({length:9},(_,i)=>i+9) },
-    { label: 'Overall',  holes: Array.from({length:18},(_,i)=>i)  },
-  ];
-  let html = '';
-  ROUNDS.forEach((r, ri) => {
-    html += `<div style="background:var(--tan-pale);border-radius:8px;padding:12px;margin-bottom:8px;">
-      <div style="font-weight:600;margin-bottom:8px;font-size:13px;">${r.short} · ${r.name}</div>`;
-    [0,1].forEach(gi => {
-      const grp = GROUPS_PER_ROUND[ri][gi];
-      html += `<div style="font-family:'DM Mono',monospace;font-size:9px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Group ${gi+1}: ${grp.join(' · ')}</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;">`;
-      segments.forEach(seg => {
-        const res = nassauGroupWinner(grp, ri, seg.holes);
-        const isSet = res.name !== '—' && res.name !== 'Tied';
-        html += `<div style="background:${isSet?'#e8f5e9':'var(--white)'};border-radius:6px;padding:8px;border:1px solid ${isSet?'var(--green-mid)':'var(--sand)'};">
-          <div style="font-size:10px;color:#888;font-family:'DM Mono',monospace;margin-bottom:4px;">${seg.label} · $${amt}</div>
-          <div style="font-size:13px;font-weight:700;color:${isSet?'var(--green)':res.name==='Tied'?'var(--gold)':'#bbb'};">${res.name}</div>
-          <div style="font-size:9px;color:#bbb;margin-top:2px;">${res.detail}</div>
-        </div>`;
-      });
-      html += `</div>`;
-    });
-    html += `</div>`;
-  });
-  wrap.innerHTML = html;
-}
-
 // ============================================================
 // MONEY TRACKER — with settlement / who owes who
 // ============================================================
@@ -2569,7 +2485,7 @@ function renderCaddies() {
 // ============================================================
 const VOTE_AMOUNTS = [1, 2, 5, 10, 20, 25, 50, 75, 100, 101];
 function fmtAmt(a) { return a === 101 ? '>$100' : '$' + a; }
-const GAME_IDS = ['stableford','skins','nassau','four-v-four','two-v-two','scramble'];
+const GAME_IDS = ['stableford','skins','four-v-four','two-v-two'];
 
 function loadVotes()      { try { return JSON.parse(localStorage.getItem('bdVotes')      || '{}'); } catch { return {}; } }
 function saveVotes(v)     { localStorage.setItem('bdVotes',      JSON.stringify(v)); }
@@ -2630,39 +2546,37 @@ function renderVoteSection(gameId) {
 
   let html = `<div class="vote-section">`;
 
-  if (gameId !== 'scramble') {
-    html += `<div class="vote-header">
-      <span class="vote-title-lbl">Vote to Play?</span>
-      <span class="vote-count-lbl">${playVoted.size}/8 voted</span>
-    </div>
-    <div class="vote-input-row" style="margin-bottom:8px;">
-      <select class="vote-sel" id="vpname-${gameId}">
-        <option value="">Your name</option>
-        ${playUnvoted.map(p => `<option>${p}</option>`).join('')}
-        ${playVoted.size ? `<optgroup label="── voted ──">${[...playVoted].map(p => `<option value="${p}">${p} (${playVotes[p]})</option>`).join('')}</optgroup>` : ''}
-      </select>
-      <select class="vote-sel" id="vpyn-${gameId}">
-        <option value="">Yes / No</option>
-        <option value="yes">Yes ✅</option>
-        <option value="no">No ❌</option>
-      </select>
-      <button class="vote-submit" onclick="castPlayVote('${gameId}')">Vote</button>
-    </div>`;
+  html += `<div class="vote-header">
+    <span class="vote-title-lbl">Vote to Play?</span>
+    <span class="vote-count-lbl">${playVoted.size}/8 voted</span>
+  </div>
+  <div class="vote-input-row" style="margin-bottom:8px;">
+    <select class="vote-sel" id="vpname-${gameId}">
+      <option value="">Your name</option>
+      ${playUnvoted.map(p => `<option>${p}</option>`).join('')}
+      ${playVoted.size ? `<optgroup label="── voted ──">${[...playVoted].map(p => `<option value="${p}">${p} (${playVotes[p]})</option>`).join('')}</optgroup>` : ''}
+    </select>
+    <select class="vote-sel" id="vpyn-${gameId}">
+      <option value="">Yes / No</option>
+      <option value="yes">Yes ✅</option>
+      <option value="no">No ❌</option>
+    </select>
+    <button class="vote-submit" onclick="castPlayVote('${gameId}')">Vote</button>
+  </div>`;
 
-    if (playVoted.size > 0) {
-      html += `<div style="display:flex;gap:8px;margin-bottom:12px;">
-        <div style="flex:1;background:#e8f5e9;border-radius:6px;padding:8px;text-align:center;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Yes</div>
-          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--green);">${yesPlayers.length}</div>
-          <div style="font-size:9px;color:#aaa;">${yesPlayers.join(', ') || '—'}</div>
-        </div>
-        <div style="flex:1;background:#fce4ec;border-radius:6px;padding:8px;text-align:center;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">No</div>
-          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--red);">${noPlayers.length}</div>
-          <div style="font-size:9px;color:#aaa;">${noPlayers.join(', ') || '—'}</div>
-        </div>
-      </div>`;
-    }
+  if (playVoted.size > 0) {
+    html += `<div style="display:flex;gap:8px;margin-bottom:12px;">
+      <div style="flex:1;background:#e8f5e9;border-radius:6px;padding:8px;text-align:center;">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">Yes</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--green);">${yesPlayers.length}</div>
+        <div style="font-size:9px;color:#aaa;">${yesPlayers.join(', ') || '—'}</div>
+      </div>
+      <div style="flex:1;background:#fce4ec;border-radius:6px;padding:8px;text-align:center;">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px;">No</div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--red);">${noPlayers.length}</div>
+        <div style="font-size:9px;color:#aaa;">${noPlayers.join(', ') || '—'}</div>
+      </div>
+    </div>`;
   }
 
   // — Stakes vote —
@@ -2722,53 +2636,7 @@ function renderVoteSection(gameId) {
   wrap.innerHTML = html;
 }
 
-function renderAllVotes() { GAME_IDS.forEach(renderVoteSection); renderPlayVote(); }
-
-// ============================================================
-// SCRAMBLE PLAY VOTE
-// ============================================================
-function castScrambleVote() {
-  var player = document.getElementById('scramble-voter').value;
-  var choice = document.getElementById('scramble-choice').value;
-  if (!player || !choice) return;
-  var pv = JSON.parse(localStorage.getItem('bdScrambleVote') || '{}');
-  pv[player] = choice;
-  localStorage.setItem('bdScrambleVote', JSON.stringify(pv));
-  renderPlayVote();
-}
-
-function renderPlayVote() {
-  var wrap = document.getElementById('scramble-play-vote');
-  if (!wrap) return;
-  var pv = JSON.parse(localStorage.getItem('bdScrambleVote') || '{}');
-  var yes = [], no = [];
-  Object.keys(pv).forEach(function(p){ pv[p]==='yes' ? yes.push(p) : no.push(p); });
-  var voted   = Object.keys(pv);
-  var unvoted = PLAYERS.filter(function(p){ return !voted.includes(p); });
-
-  var opts = '<option value="">Your name</option>'
-    + unvoted.map(function(p){ return '<option>'+p+'</option>'; }).join('')
-    + (voted.length ? '<optgroup label="── voted ──">'+voted.map(function(p){ return '<option value="'+p+'">'+p+' ('+pv[p]+')</option>'; }).join('')+'</optgroup>' : '');
-
-  wrap.innerHTML = '<div style="margin-bottom:14px;">'
-    + '<div style="font-family:\'DM Mono\',monospace;font-size:11px;font-weight:600;color:var(--green);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px;">Vote to Play? ('+voted.length+'/8)</div>'
-    + '<div class="vote-input-row" style="margin-bottom:10px;">'
-    + '<select class="vote-sel" id="scramble-voter">'+opts+'</select>'
-    + '<select class="vote-sel" id="scramble-choice"><option value="">Yes / No</option><option value="yes">Yes ✅</option><option value="no">No ❌</option></select>'
-    + '<button class="vote-submit" onclick="castScrambleVote()">Vote</button>'
-    + '</div>'
-    + '<div style="display:flex;gap:10px;">'
-    + '<div style="flex:1;background:#e8f5e9;border-radius:8px;padding:10px;text-align:center;">'
-    + '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Yes</div>'
-    + '<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:900;color:var(--green);">'+yes.length+'</div>'
-    + '<div style="font-size:10px;color:#aaa;">'+(yes.join(', ')||'—')+'</div>'
-    + '</div>'
-    + '<div style="flex:1;background:#fce4ec;border-radius:8px;padding:10px;text-align:center;">'
-    + '<div style="font-family:\'DM Mono\',monospace;font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">No</div>'
-    + '<div style="font-family:\'Playfair Display\',serif;font-size:26px;font-weight:900;color:var(--red);">'+no.length+'</div>'
-    + '<div style="font-size:10px;color:#aaa;">'+(no.join(', ')||'—')+'</div>'
-    + '</div></div></div>';
-}
+function renderAllVotes() { GAME_IDS.forEach(renderVoteSection); }
 
 // ============================================================
 // 4V4 TEAM MATCH
@@ -2920,7 +2788,7 @@ const TOUR_STEPS = [
   { tab:'schedule', title:'⛳ Welcome to Bandon 2025',       desc:'Your trip command center for June 4–7. Start here to see every round, tee time, group pairing, and caddy assignment.' },
   { tab:'players',  title:'🏌️ Players & Handicaps',          desc:'All 8 players are pre-loaded. Tap any handicap to edit it — net scores and stroke allocations update everywhere automatically.' },
   { tab:'scores',   title:'📋 Scorecards',                   desc:'Enter gross scores hole by hole during or after each round. Color coding shows birdies, bogeys, and worse at a glance. You can even take a picture of your scorecard and upload it — AI fills in the scores automatically.' },
-  { tab:'betting',  title:'💰 Betting Games',                desc:'Five games: Stableford Trophy, Skins, Nassau, 4v4 Match, and 2v2 Best Ball. Vote on your preferred dollar amount — the host sets the final stakes.' },
+  { tab:'betting',  title:'💰 Betting Games',                desc:'Four games: Stableford Trophy, Skins, 4v4 Team Match, and 2v2 Best Ball. Vote to play each game and set your preferred stakes — the host locks in the final value.' },
   { tab:'money',    title:'💸 Money Tracker',                desc:'Log payouts after each round. Running balances update instantly and the settlement section shows the fewest payments needed to square up.' },
   { tab:'costs',    title:'🧾 Trip Costs',                   desc:'Full per-player breakdown: greens fees, caddy costs, and deposit credits — plus gambling P&L pulled from the money tracker.' },
   { tab:'caddies',  title:'🎒 Caddy Schedule',              desc:'C = Carry caddy ($125 tip), G = Group/Forecaddie ($50–60 tip), N = No caddy. View by round or flip to by-player.' },
