@@ -844,6 +844,67 @@
   }
   .food-spot-desc { font-size: 12px; color: #666; line-height: 1.5; }
 
+  /* TOUR */
+  .tour-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:300; }
+  .tour-overlay.active { display:block; }
+  .tour-card {
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    background:var(--white); border-radius:16px; padding:20px 20px 18px;
+    width:calc(100% - 32px); max-width:560px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.3); z-index:301;
+  }
+  .tour-step-label { font-family:'DM Mono',monospace; font-size:10px; color:#aaa; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  .tour-title { font-family:'Playfair Display',serif; font-size:19px; font-weight:700; color:var(--green); margin-bottom:8px; }
+  .tour-desc { font-size:13px; color:#555; line-height:1.6; margin-bottom:14px; }
+  .tour-progress { display:flex; gap:4px; margin-bottom:14px; }
+  .tour-dot { flex:1; height:3px; border-radius:2px; background:var(--sand); }
+  .tour-dot.done { background:var(--green); }
+  .tour-dot.active { background:var(--tan); }
+  .tour-btn-row { display:flex; justify-content:space-between; align-items:center; }
+  .tour-skip { background:none; border:none; color:#aaa; font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .tour-next { background:var(--green); color:var(--white); border:none; border-radius:8px; padding:10px 22px; font-size:14px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; }
+  .tour-highlight { outline:3px solid var(--tan) !important; outline-offset:2px; border-radius:4px; }
+  .tour-help-btn { background:none; border:1px solid rgba(255,255,255,0.3); border-radius:6px; color:rgba(255,255,255,0.7); font-size:11px; padding:3px 8px; cursor:pointer; font-family:'DM Mono',monospace; }
+
+  /* VOTING */
+  .vote-section { border-top:1px solid var(--sand); margin-top:14px; padding-top:12px; }
+  .vote-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .vote-title-lbl { font-family:'DM Mono',monospace; font-size:11px; font-weight:600; color:var(--green); letter-spacing:1px; text-transform:uppercase; }
+  .vote-count-lbl { font-family:'DM Mono',monospace; font-size:11px; color:#888; }
+  .vote-input-row { display:grid; grid-template-columns:1fr 1fr auto; gap:6px; margin-bottom:10px; align-items:center; }
+  .vote-sel { border:1px solid var(--sand); border-radius:6px; padding:7px 8px; font-size:12px; background:var(--cream); font-family:'DM Sans',sans-serif; color:var(--dark); width:100%; }
+  .vote-submit { background:var(--green); color:white; border:none; border-radius:6px; padding:7px 12px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; font-family:'DM Sans',sans-serif; }
+  .vote-bars { margin-bottom:8px; }
+  .vote-bar-row { display:flex; align-items:center; gap:6px; margin-bottom:5px; font-size:11px; font-family:'DM Mono',monospace; }
+  .vote-bar-lbl { width:30px; text-align:right; color:#666; flex-shrink:0; }
+  .vote-bar-track { flex:1; height:8px; background:var(--sand); border-radius:4px; overflow:hidden; }
+  .vote-bar-fill { height:100%; background:var(--green-light); border-radius:4px; transition:width 0.3s; }
+  .vote-names-lbl { font-size:10px; color:#aaa; flex-shrink:0; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .vote-final { display:flex; align-items:center; gap:8px; background:var(--tan-pale); border-radius:8px; padding:8px 12px; margin-top:8px; }
+  .vote-final-lbl { font-family:'DM Mono',monospace; font-size:10px; color:var(--green); letter-spacing:1px; text-transform:uppercase; flex:1; }
+  .vote-final-val { font-family:'Playfair Display',serif; font-size:20px; font-weight:900; color:var(--green); }
+  .admin-toggle-btn { background:none; border:1px solid var(--sand); border-radius:6px; padding:5px 10px; font-size:11px; color:#aaa; cursor:pointer; font-family:'DM Mono',monospace; margin-top:8px; }
+  .admin-set-row { display:none; align-items:center; gap:6px; margin-top:6px; }
+  .admin-set-row.open { display:flex; }
+  .admin-set-inp { width:70px; border:1px solid var(--green); border-radius:6px; padding:5px 8px; font-family:'DM Mono',monospace; font-size:13px; background:var(--cream); }
+  .admin-set-confirm { background:var(--green); color:white; border:none; border-radius:6px; padding:5px 14px; font-size:12px; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; }
+
+  /* TEAM MATCH */
+  .team-row { display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:12px; }
+  .team-box { background:var(--tan-pale); border-radius:8px; padding:10px; text-align:center; }
+  .team-box.leading { background:#e8f5e9; }
+  .team-name-lbl { font-family:'DM Mono',monospace; font-size:10px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+  .team-score-lbl { font-family:'Playfair Display',serif; font-size:26px; font-weight:900; color:var(--green); }
+  .team-players-lbl { font-size:11px; color:#666; line-height:1.6; margin-top:4px; }
+  .match-vs-lbl { font-family:'Playfair Display',serif; font-size:18px; font-weight:900; color:var(--tan); text-align:center; }
+  .hole-grid-match { display:grid; grid-template-columns:repeat(9,1fr); gap:2px; margin-bottom:6px; }
+  .hole-cell-m { border-radius:3px; padding:5px 2px; text-align:center; font-family:'DM Mono',monospace; font-size:10px; cursor:pointer; }
+  .hole-cell-m.mhdr { background:var(--green); color:var(--tan-light); cursor:default; }
+  .hole-cell-m.mneutral { background:var(--tan-pale); }
+  .hole-cell-m.ma { background:#c8e6c9; color:var(--green); font-weight:700; }
+  .hole-cell-m.mb { background:#fce4ec; color:var(--red); font-weight:700; }
+  .hole-cell-m.mh { background:#e3f2fd; color:var(--blue); }
+
   /* PAIR FREQUENCY */
   .pair-table {
     width: 100%;
@@ -878,7 +939,10 @@
       <span>June 4–7, 2025</span>
       Bandon Dunes
     </div>
-    <div class="header-badge">⛳ 5 Rounds</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="tour-help-btn" onclick="startTour()">? Tour</button>
+      <div class="header-badge">⛳ 5 Rounds</div>
+    </div>
   </div>
   <nav class="nav">
     <button class="nav-btn active" onclick="showSection('schedule',this)">Schedule</button>
@@ -1161,6 +1225,7 @@
           </thead>
           <tbody id="stableford-body"></tbody>
         </table>
+        <div id="votes-stableford"></div>
       </div>
     </div>
 
@@ -1190,6 +1255,7 @@
         </div>
         <div id="skins-holes"></div>
         <div id="skins-results" style="margin-top:12px;"></div>
+        <div id="votes-skins"></div>
       </div>
     </div>
 
@@ -1206,6 +1272,64 @@
           <input class="form-input" type="number" id="nassau-amt" value="20" min="1">
         </div>
         <div id="nassau-rounds"></div>
+        <div id="votes-nassau"></div>
+      </div>
+    </div>
+
+    <!-- 4v4 Team Match -->
+    <div class="game-card">
+      <div class="game-header">
+        <div class="game-title">⚔️ 4v4 Team Match</div>
+        <div class="game-pot">By hole · net</div>
+      </div>
+      <div class="game-body">
+        <div class="game-desc">Group 1 vs Group 2 each round. Net match play hole by hole — lowest net score in the group wins the hole for their team. Tap each hole to record the result.</div>
+        <div class="form-row" style="margin-bottom:12px;">
+          <div>
+            <label class="form-label">Round</label>
+            <select class="form-input" id="match4v4-round" onchange="render4v4()">
+              <option value="0">R1 — Bandon Dunes</option>
+              <option value="1">R2 — Sheep Ranch</option>
+              <option value="2">R3 — Old Mac</option>
+              <option value="3">R4 — Bandon Trails</option>
+              <option value="4">R5 — Pac Dunes</option>
+            </select>
+          </div>
+        </div>
+        <div id="match4v4-body"></div>
+        <div id="votes-four-v-four"></div>
+      </div>
+    </div>
+
+    <!-- 2v2 Best Ball -->
+    <div class="game-card">
+      <div class="game-header">
+        <div class="game-title">🤜 2v2 Best Ball</div>
+        <div class="game-pot">By hole · net</div>
+      </div>
+      <div class="game-body">
+        <div class="game-desc">Within each group of 4, two pairs go head-to-head. Best net score from each pair wins the hole. Select the round and group, then tap holes to record results.</div>
+        <div class="form-row" style="margin-bottom:12px;">
+          <div>
+            <label class="form-label">Round</label>
+            <select class="form-input" id="match2v2-round" onchange="render2v2()">
+              <option value="0">R1 — Bandon Dunes</option>
+              <option value="1">R2 — Sheep Ranch</option>
+              <option value="2">R3 — Old Mac</option>
+              <option value="3">R4 — Bandon Trails</option>
+              <option value="4">R5 — Pac Dunes</option>
+            </select>
+          </div>
+          <div>
+            <label class="form-label">Group</label>
+            <select class="form-input" id="match2v2-group" onchange="render2v2()">
+              <option value="0">Group 1 (early)</option>
+              <option value="1">Group 2 (late)</option>
+            </select>
+          </div>
+        </div>
+        <div id="match2v2-body"></div>
+        <div id="votes-two-v-two"></div>
       </div>
     </div>
 
@@ -1474,6 +1598,20 @@
 
 </div>
 
+<!-- TOUR OVERLAY -->
+<div class="tour-overlay" id="tour-overlay" onclick="e => e.stopPropagation()">
+  <div class="tour-card">
+    <div class="tour-step-label" id="tour-step-label">Step 1 of 8</div>
+    <div class="tour-title" id="tour-title"></div>
+    <div class="tour-desc" id="tour-desc"></div>
+    <div class="tour-progress" id="tour-progress"></div>
+    <div class="tour-btn-row">
+      <button class="tour-skip" onclick="endTour()">Skip tour</button>
+      <button class="tour-next" id="tour-next-btn" onclick="tourNext()">Next →</button>
+    </div>
+  </div>
+</div>
+
 <!-- TRANSACTION MODAL -->
 <div class="modal-overlay" id="txn-modal">
   <div class="modal">
@@ -1664,7 +1802,7 @@ function showSection(id, btn) {
   document.getElementById('section-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
   if (id === 'scores') renderScorecard();
-  if (id === 'betting') { renderStableford(); renderSkinsHoles(); renderNassau(); }
+  if (id === 'betting') { renderStableford(); renderSkinsHoles(); renderNassau(); render4v4(); render2v2(); renderAllVotes(); }
   if (id === 'money') renderMoney();
   if (id === 'costs') renderCosts();
   if (id === 'caddies') renderCaddies();
@@ -2239,6 +2377,296 @@ function renderCaddies() {
 }
 
 // ============================================================
+// VOTING SYSTEM
+// ============================================================
+const VOTE_AMOUNTS = [1, 2, 5, 10, 20, 25, 50];
+const GAME_IDS = ['stableford','skins','nassau','four-v-four','two-v-two'];
+
+function loadVotes()  { try { return JSON.parse(localStorage.getItem('bdVotes')  || '{}'); } catch { return {}; } }
+function saveVotes(v) { localStorage.setItem('bdVotes',  JSON.stringify(v)); }
+function loadFinals() { try { return JSON.parse(localStorage.getItem('bdFinals') || '{}'); } catch { return {}; } }
+function saveFinals(f){ localStorage.setItem('bdFinals', JSON.stringify(f)); }
+
+function castVote(gameId) {
+  const player = document.getElementById('vp-' + gameId).value;
+  const amount = parseInt(document.getElementById('va-' + gameId).value);
+  if (!player || !amount) return;
+  const v = loadVotes();
+  if (!v[gameId]) v[gameId] = {};
+  v[gameId][player] = amount;
+  saveVotes(v);
+  renderVoteSection(gameId);
+}
+
+function setFinalValue(gameId) {
+  const val = parseInt(document.getElementById('vf-' + gameId).value);
+  if (!val) return;
+  const f = loadFinals();
+  f[gameId] = val;
+  saveFinals(f);
+  renderVoteSection(gameId);
+}
+
+function toggleAdminRow(gameId) {
+  document.getElementById('vadmin-' + gameId).classList.toggle('open');
+}
+
+function renderVoteSection(gameId) {
+  const wrap = document.getElementById('votes-' + gameId);
+  if (!wrap) return;
+  const allVotes = loadVotes()[gameId] || {};
+  const finals   = loadFinals();
+  const finalVal = finals[gameId];
+  const voteCount = Object.keys(allVotes).length;
+
+  // tally by amount
+  const tally = {};
+  VOTE_AMOUNTS.forEach(a => tally[a] = []);
+  Object.entries(allVotes).forEach(([p, a]) => { if (!tally[a]) tally[a] = []; tally[a].push(p); });
+  const maxV = Math.max(1, ...Object.values(tally).map(a => a.length));
+
+  const votedSet = new Set(Object.keys(allVotes));
+  const unvoted  = PLAYERS.filter(p => !votedSet.has(p));
+
+  let html = `<div class="vote-section">
+    <div class="vote-header">
+      <span class="vote-title-lbl">Vote on Stakes</span>
+      <span class="vote-count-lbl">${voteCount}/8 voted</span>
+    </div>
+    <div class="vote-input-row">
+      <select class="vote-sel" id="vp-${gameId}">
+        <option value="">Your name</option>
+        ${unvoted.map(p => `<option>${p}</option>`).join('')}
+        ${votedSet.size ? `<optgroup label="── voted ──">${[...votedSet].map(p => `<option value="${p}">${p} ✓</option>`).join('')}</optgroup>` : ''}
+      </select>
+      <select class="vote-sel" id="va-${gameId}">
+        <option value="">$?</option>
+        ${VOTE_AMOUNTS.map(a => `<option value="${a}">$${a}</option>`).join('')}
+      </select>
+      <button class="vote-submit" onclick="castVote('${gameId}')">Vote</button>
+    </div>`;
+
+  if (voteCount > 0) {
+    html += `<div class="vote-bars">`;
+    VOTE_AMOUNTS.forEach(amt => {
+      const voters = tally[amt] || [];
+      if (!voters.length) return;
+      const pct = (voters.length / maxV) * 100;
+      html += `<div class="vote-bar-row">
+        <div class="vote-bar-lbl">$${amt}</div>
+        <div class="vote-bar-track"><div class="vote-bar-fill" style="width:${pct}%"></div></div>
+        <div class="vote-names-lbl">${voters.join(', ')}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  if (finalVal) {
+    html += `<div class="vote-final">
+      <span class="vote-final-lbl">Final Stakes Set</span>
+      <span class="vote-final-val">$${finalVal}</span>
+    </div>`;
+  }
+
+  html += `<button class="admin-toggle-btn" onclick="toggleAdminRow('${gameId}')">⚙ Set final value</button>
+  <div class="admin-set-row" id="vadmin-${gameId}">
+    <span style="font-size:12px;color:#888;">$</span>
+    <input class="admin-set-inp" type="number" id="vf-${gameId}" placeholder="amt" min="1" value="${finalVal || ''}">
+    <button class="admin-set-confirm" onclick="setFinalValue('${gameId}')">Confirm</button>
+  </div></div>`;
+
+  wrap.innerHTML = html;
+}
+
+function renderAllVotes() { GAME_IDS.forEach(renderVoteSection); }
+
+// ============================================================
+// 4V4 TEAM MATCH
+// ============================================================
+const TEAMS_4V4 = [
+  { a:['Bobby','Matt','Nick','Zack'],    b:['Chris','John','Taylor','Vince'] },
+  { a:['Chris','John','Nick','Zack'],    b:['Bobby','Matt','Taylor','Vince'] },
+  { a:['Chris','Matt','Nick','Vince'],   b:['Bobby','John','Taylor','Zack']  },
+  { a:['Nick','Taylor','Vince','Zack'],  b:['Bobby','Chris','John','Matt']   },
+  { a:['John','Matt','Nick','Taylor'],   b:['Bobby','Chris','Vince','Zack']  },
+];
+
+let matchData4v4 = {};
+ROUNDS.forEach((r,ri) => { matchData4v4[ri] = Array(18).fill(''); });
+
+function render4v4() {
+  const ri = parseInt(document.getElementById('match4v4-round')?.value || '0');
+  const t  = TEAMS_4V4[ri];
+  const holes = matchData4v4[ri];
+  let aW = 0, bW = 0;
+  holes.forEach(h => { if (h==='a') aW++; else if (h==='b') bW++; });
+  const status = aW > bW ? `Team A leads ${aW-bW} up` : bW > aW ? `Team B leads ${bW-aW} up` : 'All Square';
+  const wrap = document.getElementById('match4v4-body');
+  if (!wrap) return;
+
+  let html = `<div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;text-align:center;margin-bottom:10px;">${status}</div>
+  <div class="team-row">
+    <div class="team-box ${aW>bW?'leading':''}">
+      <div class="team-name-lbl">Team A</div>
+      <div class="team-score-lbl">${aW}</div>
+      <div class="team-players-lbl">${t.a.join(' · ')}</div>
+    </div>
+    <div class="match-vs-lbl">vs</div>
+    <div class="team-box ${bW>aW?'leading':''}">
+      <div class="team-name-lbl">Team B</div>
+      <div class="team-score-lbl">${bW}</div>
+      <div class="team-players-lbl">${t.b.join(' · ')}</div>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#aaa;margin-bottom:6px;text-align:center;font-family:'DM Mono',monospace;">Tap hole → A win → B win → Halved → clear</div>`;
+
+  [0, 9].forEach(start => {
+    html += `<div class="hole-grid-match">`;
+    for (let h = start+1; h <= start+9; h++) html += `<div class="hole-cell-m mhdr">${h}</div>`;
+    for (let h = start; h < start+9; h++) {
+      const v = holes[h];
+      const cls = v==='a'?'ma':v==='b'?'mb':v==='h'?'mh':'mneutral';
+      const lbl = v==='a'?'A':v==='b'?'B':v==='h'?'½':'·';
+      html += `<div class="hole-cell-m ${cls}" onclick="cycle4v4(${ri},${h})">${lbl}</div>`;
+    }
+    html += `</div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function cycle4v4(ri, hi) {
+  const cur = matchData4v4[ri][hi];
+  matchData4v4[ri][hi] = cur===''?'a':cur==='a'?'b':cur==='b'?'h':'';
+  render4v4();
+}
+
+// ============================================================
+// 2V2 BEST BALL
+// ============================================================
+const PAIRS_2V2 = [
+  [['Bobby','Zack'],   ['Matt','Nick']  ],  // R1 G1
+  [['Chris','Taylor'], ['John','Vince'] ],  // R1 G2
+  [['John','Zack'],    ['Chris','Nick'] ],  // R2 G1
+  [['Bobby','Taylor'], ['Matt','Vince'] ],  // R2 G2
+  [['Chris','Nick'],   ['Matt','Vince'] ],  // R3 G1
+  [['Bobby','Taylor'], ['John','Zack']  ],  // R3 G2
+  [['Taylor','Nick'],  ['Vince','Zack'] ],  // R4 G1
+  [['Bobby','Chris'],  ['John','Matt']  ],  // R4 G2
+  [['John','Taylor'],  ['Matt','Nick']  ],  // R5 G1
+  [['Bobby','Zack'],   ['Chris','Vince']],  // R5 G2
+];
+
+let matchData2v2 = {};
+ROUNDS.forEach((r,ri) => { matchData2v2[ri] = { 0: Array(18).fill(''), 1: Array(18).fill('') }; });
+
+function render2v2() {
+  const ri = parseInt(document.getElementById('match2v2-round')?.value || '0');
+  const gi = parseInt(document.getElementById('match2v2-group')?.value || '0');
+  const pairs = PAIRS_2V2[ri * 2 + gi];
+  const holes = matchData2v2[ri][gi];
+  let aW = 0, bW = 0;
+  holes.forEach(h => { if (h==='a') aW++; else if (h==='b') bW++; });
+  const status = aW > bW ? `Pair A leads ${aW-bW} up` : bW > aW ? `Pair B leads ${bW-aW} up` : 'All Square';
+  const wrap = document.getElementById('match2v2-body');
+  if (!wrap) return;
+
+  let html = `<div style="font-family:'DM Mono',monospace;font-size:10px;color:#888;text-align:center;margin-bottom:10px;">${status}</div>
+  <div class="team-row">
+    <div class="team-box ${aW>bW?'leading':''}">
+      <div class="team-name-lbl">Pair A</div>
+      <div class="team-score-lbl">${aW}</div>
+      <div class="team-players-lbl">${pairs[0].join(' & ')}</div>
+    </div>
+    <div class="match-vs-lbl">vs</div>
+    <div class="team-box ${bW>aW?'leading':''}">
+      <div class="team-name-lbl">Pair B</div>
+      <div class="team-score-lbl">${bW}</div>
+      <div class="team-players-lbl">${pairs[1].join(' & ')}</div>
+    </div>
+  </div>
+  <div style="font-size:11px;color:#aaa;margin-bottom:6px;text-align:center;font-family:'DM Mono',monospace;">Tap hole → A win → B win → Halved → clear</div>`;
+
+  [0, 9].forEach(start => {
+    html += `<div class="hole-grid-match">`;
+    for (let h = start+1; h <= start+9; h++) html += `<div class="hole-cell-m mhdr">${h}</div>`;
+    for (let h = start; h < start+9; h++) {
+      const v = holes[h];
+      const cls = v==='a'?'ma':v==='b'?'mb':v==='h'?'mh':'mneutral';
+      const lbl = v==='a'?'A':v==='b'?'B':v==='h'?'½':'·';
+      html += `<div class="hole-cell-m ${cls}" onclick="cycle2v2(${ri},${gi},${h})">${lbl}</div>`;
+    }
+    html += `</div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+function cycle2v2(ri, gi, hi) {
+  const cur = matchData2v2[ri][gi][hi];
+  matchData2v2[ri][gi][hi] = cur===''?'a':cur==='a'?'b':cur==='b'?'h':'';
+  render2v2();
+}
+
+// ============================================================
+// ONBOARDING TOUR
+// ============================================================
+const TOUR_STEPS = [
+  { tab:'schedule', title:'⛳ Welcome to Bandon 2025',       desc:'Your trip command center for June 4–7. Start here to see every round, tee time, group pairing, and caddy assignment.' },
+  { tab:'players',  title:'🏌️ Players & Handicaps',          desc:'All 8 players are pre-loaded. Tap any handicap to edit it — net scores and stroke allocations update everywhere automatically.' },
+  { tab:'scores',   title:'📋 Scorecards',                   desc:'Enter gross scores hole by hole during or after each round. Color coding shows birdies, bogeys, and worse at a glance.' },
+  { tab:'betting',  title:'💰 Betting Games',                desc:'Five games: Stableford Trophy, Skins, Nassau, 4v4 Match, and 2v2 Best Ball. Vote on your preferred dollar amount — the host sets the final stakes.' },
+  { tab:'money',    title:'💸 Money Tracker',                desc:'Log payouts after each round. Running balances update instantly and the settlement section shows the fewest payments needed to square up.' },
+  { tab:'costs',    title:'🧾 Trip Costs',                   desc:'Full per-player breakdown: greens fees, caddy costs, and deposit credits — plus gambling P&L pulled from the money tracker.' },
+  { tab:'caddies',  title:'🎒 Caddy Schedule',              desc:'C = Carry caddy ($125 tip), G = Group/Forecaddie ($50–60 tip), N = No caddy. View by round or flip to by-player.' },
+  { tab:'food',     title:'🍽️ Food & Dining',               desc:'Three-night dinner plan: Puffin Bar Thu, Pacific Grill Fri, Ghost Tree steakhouse Sat. Plus on-resort quick bites and Old Town Bandon.' },
+];
+
+let tourStep = 0;
+
+function startTour() {
+  tourStep = 0;
+  // Build progress dots
+  const prog = document.getElementById('tour-progress');
+  if (prog) prog.innerHTML = TOUR_STEPS.map((_,i) => `<div class="tour-dot" id="tdot-${i}"></div>`).join('');
+  showTourStep();
+  document.getElementById('tour-overlay').classList.add('active');
+}
+
+function showTourStep() {
+  const step = TOUR_STEPS[tourStep];
+  if (!step) { endTour(); return; }
+  document.getElementById('tour-step-label').textContent = `Step ${tourStep+1} of ${TOUR_STEPS.length}`;
+  document.getElementById('tour-title').textContent  = step.title;
+  document.getElementById('tour-desc').textContent   = step.desc;
+  document.getElementById('tour-next-btn').textContent = tourStep === TOUR_STEPS.length-1 ? "Let's play! ⛳" : 'Next →';
+  // Progress dots
+  TOUR_STEPS.forEach((_,i) => {
+    const d = document.getElementById('tdot-'+i);
+    if (!d) return;
+    d.classList.remove('done','active');
+    if (i < tourStep) d.classList.add('done');
+    else if (i === tourStep) d.classList.add('active');
+  });
+  // Highlight nav btn and switch tab
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('tour-highlight'));
+  const activeBtn = document.querySelector(`.nav-btn[onclick*="'${step.tab}'"]`);
+  if (activeBtn) { activeBtn.classList.add('tour-highlight'); showSection(step.tab, activeBtn); }
+}
+
+function tourNext() {
+  tourStep++;
+  if (tourStep >= TOUR_STEPS.length) { endTour(); return; }
+  showTourStep();
+}
+
+function endTour() {
+  document.getElementById('tour-overlay').classList.remove('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('tour-highlight'));
+  localStorage.setItem('bdTourDone','1');
+  // Go back to schedule
+  showSection('schedule', document.querySelector('.nav-btn'));
+}
+
+// ============================================================
 // INIT
 // ============================================================
 buildPairMatrix();
@@ -2249,6 +2677,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const l = document.getElementById('txn-loser');
   if (w) w.innerHTML = PLAYERS.map(p => `<option>${p}</option>`).join('');
   if (l) l.innerHTML = PLAYERS.map(p => `<option>${p}</option>`).join('');
+  if (!localStorage.getItem('bdTourDone')) setTimeout(startTour, 700);
 });
 </script>
 </body>
